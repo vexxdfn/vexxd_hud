@@ -1,0 +1,1 @@
+buckle.ogg and unbuckle.ogg are from qbx_seatbelt (https://github.com/Qbox-project/qbx_seatbelt), licensed under GPL-3.0 (see LICENSE in this folder).
