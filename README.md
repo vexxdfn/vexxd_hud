@@ -6,6 +6,15 @@ HUD and speedometer with an in-game settings menu, layout editor, profiles and s
 
 Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
 
+<img width="1920" height="1080" alt="hud11" src="https://github.com/user-attachments/assets/63aebefc-42d2-48e8-a67f-aee67630e5ba" />
+<img width="1920" height="1080" alt="hud" src="https://github.com/user-attachments/assets/45f1d970-83f9-4388-a00b-926517bc3e63" />
+<img width="1920" height="1080" alt="hud6" src="https://github.com/user-attachments/assets/88c26d3e-a5f9-4f00-8afa-948bdfd07e78" />
+<img width="1920" height="1080" alt="hud7" src="https://github.com/user-attachments/assets/3d7825c5-cf66-4e93-bd97-af5024fbfe90" />
+<img width="1920" height="1080" alt="hud8" src="https://github.com/user-attachments/assets/c80b8af8-acab-44d2-8c1a-5bae869be8fe" />
+<img width="1920" height="1080" alt="hud9" src="https://github.com/user-attachments/assets/4f1f913f-e3e0-471a-a34e-b3418a76872f" />
+<img width="1920" height="1080" alt="hud10" src="https://github.com/user-attachments/assets/28105859-ef91-4e17-ac2b-27ed9145f63b" />
+<img width="1920" height="1080" alt="hud11" src="https://github.com/user-attachments/assets/720f6872-ccb3-4dea-a3c3-2309da7d93dd" />
+
 ## Features
 
 - `/hud` settings menu, players set everything themselves (you can lock any group in the config)
