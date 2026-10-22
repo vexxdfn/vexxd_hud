@@ -11,8 +11,51 @@ local LOCK_KEYS = {
     info = { 'show' },
 }
 
+local ELEMENTS = {
+    cash = { 'show', 'cash' },
+    bank = { 'show', 'bank' },
+    job = { 'show', 'job' },
+    id = { 'show', 'id' },
+    time = { 'show', 'time' },
+    voice = { 'show', 'voice' },
+    compass = { 'compass' },
+    street = { 'street' },
+    postal = { 'postal' },
+    navigation = { 'nav' },
+    weapon = { 'weaponHud' },
+}
+
+local forced, locks = {}, {}
+
+for group, on in pairs(Config.Locks) do locks[group] = on end
+
+for name, mode in pairs(Config.Elements or {}) do
+    if ELEMENTS[name] and (mode == 'show' or mode == 'hide') then
+        forced[#forced + 1] = { path = ELEMENTS[name], value = mode == 'show' }
+        locks['f_' .. name] = true
+    end
+end
+
+local useDatabase = Config.SaveSettings == 'database'
+
 function Hud.send(action, data)
     SendNUIMessage({ action = action, data = data })
+end
+
+local function applyForced(s)
+    for _, f in ipairs(forced) do
+        local t = s
+
+        for i = 1, #f.path - 1 do
+            local k = f.path[i]
+            if type(t[k]) ~= 'table' then t[k] = {} end
+            t = t[k]
+        end
+
+        t[f.path[#f.path]] = f.value
+    end
+
+    return s
 end
 
 local function stripLocked(s)
@@ -22,14 +65,95 @@ local function stripLocked(s)
         end
     end
 
+    for _, f in ipairs(forced) do
+        local t = s
+
+        for i = 1, #f.path - 1 do
+            t = type(t) == 'table' and t[f.path[i]] or nil
+        end
+
+        if type(t) == 'table' then t[f.path[#f.path]] = nil end
+    end
+
     return s
 end
 
-local function loadSettings()
-    local raw = GetResourceKvpString('settings')
-    local ok, saved = pcall(json.decode, raw or '{}')
+local function decode(raw, fallback)
+    local ok, v = pcall(json.decode, raw or '')
+    return ok and type(v) == 'table' and v or fallback
+end
 
-    return stripLocked(ok and type(saved) == 'table' and saved or {})
+local saved, loading
+
+---Settings and profiles, from the database when that's on (the local copy is the fallback).
+local function savedData()
+    if saved then return saved end
+
+    if loading then
+        while loading do Wait(0) end
+        return saved
+    end
+
+    loading = true
+
+    local localSettings = decode(GetResourceKvpString('settings'), {})
+    local localProfiles = decode(GetResourceKvpString('profiles'), {})
+    local data = { settings = localSettings, profiles = localProfiles }
+
+    if useDatabase then
+        local row = lib.callback.await('vexxd_hud:load', 5000)
+
+        if type(row) == 'table' then
+            if type(row.settings) == 'table' then
+                data.settings = row.settings
+            elseif next(localSettings) then
+                TriggerServerEvent('vexxd_hud:save', 'settings', localSettings)
+            end
+
+            if type(row.profiles) == 'table' then
+                data.profiles = row.profiles
+            elseif next(localProfiles) then
+                TriggerServerEvent('vexxd_hud:save', 'profiles', localProfiles)
+            end
+        end
+    end
+
+    saved, loading = data, false
+
+    return saved
+end
+
+local pending, flushing = {}, false
+
+---Saves locally right away and to the database a moment later, so dragging a slider sends one save.
+local function persist(kind, value)
+    savedData()[kind] = value
+    SetResourceKvp(kind, json.encode(value))
+
+    if not useDatabase then return end
+
+    pending[kind] = value
+
+    if flushing then return end
+
+    flushing = true
+
+    SetTimeout(1500, function()
+        flushing = false
+
+        for k, v in pairs(pending) do
+            TriggerServerEvent('vexxd_hud:save', k, v)
+            pending[k] = nil
+        end
+    end)
+end
+
+local function loadSettings()
+    return stripLocked(lib.table.deepclone(savedData().settings))
+end
+
+local function fullSettings(s)
+    return applyForced(lib.table.merge(lib.table.deepclone(Config.Defaults), s))
 end
 
 local function nuiLocale()
@@ -60,15 +184,19 @@ local function features()
 end
 
 local function sendInit()
-    Hud.settings = lib.table.merge(lib.table.deepclone(Config.Defaults), loadSettings())
-    Hud.send('init', {
-        settings = Hud.settings,
-        defaults = Config.Defaults,
-        locks = Config.Locks,
-        locale = nuiLocale(),
-        features = features(),
-        mapFrame = Hud.mapFrame,
-    })
+    CreateThread(function()
+        Hud.settings = fullSettings(loadSettings())
+        Hud.send('init', {
+            settings = Hud.settings,
+            defaults = Config.Defaults,
+            locks = locks,
+            forced = forced,
+            locale = nuiLocale(),
+            features = features(),
+            mapFrame = Hud.mapFrame,
+        })
+        Hud.applyMap()
+    end)
 end
 
 RegisterNUICallback('ready', function(_, cb)
@@ -81,8 +209,10 @@ end)
 
 RegisterNUICallback('saveSettings', function(data, cb)
     if type(data.settings) == 'table' then
-        Hud.settings = stripLocked(data.settings)
-        SetResourceKvp('settings', json.encode(Hud.settings))
+        local clean = stripLocked(data.settings)
+
+        persist('settings', clean)
+        Hud.settings = fullSettings(lib.table.deepclone(clean))
         Hud.applyMap()
     end
 
@@ -90,9 +220,7 @@ RegisterNUICallback('saveSettings', function(data, cb)
 end)
 
 RegisterNUICallback('profiles', function(data, cb)
-    local ok, list = pcall(json.decode, GetResourceKvpString('profiles') or '[]')
-
-    list = ok and type(list) == 'table' and list or {}
+    local list = savedData().profiles
 
     if data.op == 'save' and type(data.name) == 'string' and type(data.settings) == 'table' then
         for i = #list, 1, -1 do
@@ -103,13 +231,13 @@ RegisterNUICallback('profiles', function(data, cb)
 
         while #list > 10 do table.remove(list) end
 
-        SetResourceKvp('profiles', json.encode(list))
+        persist('profiles', list)
     elseif data.op == 'delete' then
         for i = #list, 1, -1 do
             if list[i].name == data.name then table.remove(list, i) end
         end
 
-        SetResourceKvp('profiles', json.encode(list))
+        persist('profiles', list)
     end
 
     cb({ list = list })
@@ -163,7 +291,7 @@ RegisterCommand(Config.Command, function()
     if not Bridge.loaded then return end
 
     SetNuiFocus(true, true)
-    Hud.send('openMenu', { locks = Config.Locks })
+    Hud.send('openMenu', { locks = locks })
 end, false)
 
 local last = {}

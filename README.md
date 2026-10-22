@@ -1,4 +1,3 @@
-
 # HUD
 
 HUD and speedometer with an in-game settings menu, layout editor, profiles and share codes. Free and open source.
@@ -7,19 +6,6 @@ HUD and speedometer with an in-game settings menu, layout editor, profiles and s
 
 Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
 
-<img width="1920" height="1080" alt="hud11" src="https://github.com/user-attachments/assets/7dbaf8ff-1a52-4190-bb85-a239f10b8f8b" />
-<img width="1920" height="1080" alt="hud" src="https://github.com/user-attachments/assets/2b8125ae-a526-4f87-b533-6a10ad9493d6" />
-<img width="1920" height="1080" alt="hud10" src="https://github.com/user-attachments/assets/8f2796e2-bcaf-41cf-8901-9d5bb313fb2f" />
-<img width="1920" height="1080" alt="hud9" src="https://github.com/user-attachments/assets/574d82a5-d723-4aac-8eac-5a2ba5ce5703" />
-<img width="1920" height="1080" alt="hud1" src="https://github.com/user-attachments/assets/6a72b0bb-9ef0-4632-b0b7-20fc8f2bdcc4" />
-<img width="1920" height="1080" alt="hud2" src="https://github.com/user-attachments/assets/ed357311-03d1-49d5-8218-5e3ed2806318" />
-<img width="1920" height="1080" alt="hud3" src="https://github.com/user-attachments/assets/e6f4afa5-a229-4464-8b7f-d1ec0f51692b" />
-<img width="1920" height="1080" alt="hud4" src="https://github.com/user-attachments/assets/3ef69083-28d1-486c-8514-f699e0602492" />
-<img width="1920" height="1080" alt="hud5" src="https://github.com/user-attachments/assets/c911a682-c2a0-4fc8-aa59-272319b2f3f5" />
-<img width="1920" height="1080" alt="hud6" src="https://github.com/user-attachments/assets/44fa290b-2331-4018-85ad-d783e740fe5d" />
-<img width="1920" height="1080" alt="hud7" src="https://github.com/user-attachments/assets/dcd8399d-5842-449b-95ee-8c50b1587a37" />
-<img width="1920" height="1080" alt="hud8" src="https://github.com/user-attachments/assets/e5c2e77c-1db8-4985-bafa-a00b4f658b60" />
-
 ## Features
 
 - `/hud` settings menu, players set everything themselves (you can lock any group in the config)
@@ -27,6 +13,8 @@ Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
 - Speedometer styles per vehicle type: cars, electric, bikes, bicycles, boats, aircraft and trains
 - Drag-and-drop layout editor with snapping, size and opacity per widget
 - Profiles, plus share codes so players can copy each other's setup
+- Settings save to your database, so players keep their setup on any PC
+- Force any info element on or off for everyone from the config
 - Seatbelt with buckle sounds, a warning while driving unbuckled and windshield ejection on crashes
 - Cruise control, turn signals and hazards
 - Shift light, crash pulse, 0-60 times and top speed pops
@@ -42,7 +30,7 @@ Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
 ## Requirements
 
 - [ox_lib](https://github.com/overextended/ox_lib)
-- [oxmysql](https://github.com/overextended/oxmysql) (share codes)
+- [oxmysql](https://github.com/overextended/oxmysql) (saved settings and share codes)
 - Qbox, QBCore or ESX (works standalone with fewer fields)
 - Optional: pma-voice (voice range, talking and radio), esx_status (ESX hunger/thirst)
 
@@ -51,7 +39,7 @@ Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
 1. Put `vexxd_hud` in your resources folder.
 2. Add `ensure vexxd_hud` to `server.cfg` after ox_lib, oxmysql and your framework.
 3. Stop any other HUD (qbx_hud, qb-hud, esx_hud) so they don't draw on top of each other.
-4. The share code table is created automatically on first start.
+4. The database tables are created automatically on first start. Players who already had settings saved on their PC keep them, they're moved to the database the first time they join.
 
 ## Commands and keys
 
@@ -72,6 +60,8 @@ Everything is in `config.lua`.
 
 - `Config.Defaults` sets the starting look for new players.
 - `Config.Locks` locks a group so players can't change it.
+- `Config.Elements` forces single elements (cash, bank, job, ID, time, voice, compass, street, postal, navigation, weapon) to `'show'` or `'hide'` for everyone. Leave it on `'player'` to let players choose. Forced ones show as "Set by server" in `/hud`.
+- `Config.SaveSettings` is `'database'` (saved by license, follows the player to any PC) or `'local'` (saved on the player's PC only).
 - `Config.UpdateRate` controls how often game data is read.
 - `Config.Seatbelt.enabled = false` if another script handles seatbelts. qbx_seatbelt is detected automatically and the HUD reads its state.
 - The minimap frame lines itself up with the GTA map. If it's a few pixels off on your setup, nudge it with `Config.Minimap.adjust`.

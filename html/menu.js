@@ -52,7 +52,7 @@
   const post = (n, d = {}) => IS_GAME ? fetch(`https://${GetParentResourceName()}/${n}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) }).then(r => r.json()).catch(() => null) : Promise.resolve(null);
 
   let locks = {}, section = 'speedo', vtab = 'car', profiles = [], code = '';
-  const locked = (k) => !!locks[k];
+  const locked = (k) => Array.isArray(k) ? k.some(x => !!locks[x]) : !!locks[k];
 
   const SECTIONS = [
     ['speedo', 'gauge'], ['status', 'heart'], ['map', 'map'], ['info', 'user-circle'],
@@ -108,7 +108,7 @@
     const box = el(`<div class="tgl-list"></div>`);
     for (const [label, desc, get, setv, lockKey] of items) {
       const dis = locked(lockKey);
-      const t = el(`<div class="tgl ${get() ? 'on' : ''} ${dis ? 'dis' : ''}" role="switch" tabindex="0" aria-checked="${!!get()}"><div class="t"><b>${label}</b><span>${desc || ''}</span></div><span class="sw"></span></div>`);
+      const t = el(`<div class="tgl ${get() ? 'on' : ''} ${dis ? 'dis' : ''}" role="switch" tabindex="0" aria-checked="${!!get()}"><div class="t"><b>${label}</b><span>${[].concat(lockKey || []).some(k => k.startsWith('f_') && locks[k]) ? T.locked : desc || ''}</span></div><span class="sw"></span></div>`);
       const go = () => { if (!dis) setv(!get()); };
       t.onclick = go;
       t.onkeydown = (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); go(); } };
@@ -188,8 +188,8 @@
         toggles([
           [T.vitals, T.vitals_d, () => S().vitalsOnMap, v => set({ vitalsOnMap: v }), 'statusStyle'],
           [T.autohide, T.autohide_d, () => S().autoHide, v => set({ autoHide: v })],
-          [T.voice, T.voice_d, () => S().show.voice, v => set({ show: { voice: v } })],
-          [T.weapon, T.weapon_d, () => S().weaponHud, v => set({ weaponHud: v })],
+          [T.voice, T.voice_d, () => S().show.voice, v => set({ show: { voice: v } }), 'f_voice'],
+          [T.weapon, T.weapon_d, () => S().weaponHud, v => set({ weaponHud: v }), 'f_weapon'],
         ]),
       ];
     },
@@ -198,21 +198,21 @@
         group(T.shape, (() => { const g = opts('mapShape', [['square', T.square], ['circle', T.circle]], S().mapShape, v => set({ mapShape: v })); if (H.state.features?.circle === false) g.lastElementChild.disabled = true; return g; })(), 'map'),
         toggles([
           [T.onfoot, T.onfoot_d, () => S().mapOnFoot, v => set({ mapOnFoot: v }), 'map'],
-          [T.compass, T.compass_d, () => S().compass, v => set({ compass: v })],
-          [T.street, T.street_d, () => S().street, v => set({ street: v })],
-          [T.postal, T.postal_d, () => S().postal, v => set({ postal: v })],
-          [T.navi, T.navi_d, () => S().nav, v => set({ nav: v })],
+          [T.compass, T.compass_d, () => S().compass, v => set({ compass: v }), 'f_compass'],
+          [T.street, T.street_d, () => S().street, v => set({ street: v }), 'f_street'],
+          [T.postal, T.postal_d, () => S().postal, v => set({ postal: v }), 'f_postal'],
+          [T.navi, T.navi_d, () => S().nav, v => set({ nav: v }), 'f_navigation'],
         ]),
       ];
     },
     info() {
       const sh = S().show;
       return [toggles([
-        [T.show_cash, '', () => sh.cash, v => set({ show: { cash: v } }), 'info'],
-        [T.show_bank, '', () => sh.bank, v => set({ show: { bank: v } }), 'info'],
-        [T.show_job, '', () => sh.job, v => set({ show: { job: v } }), 'info'],
-        [T.show_id, '', () => sh.id, v => set({ show: { id: v } }), 'info'],
-        [T.show_time, '', () => sh.time, v => set({ show: { time: v } }), 'info'],
+        [T.show_cash, '', () => sh.cash, v => set({ show: { cash: v } }), ['info', 'f_cash']],
+        [T.show_bank, '', () => sh.bank, v => set({ show: { bank: v } }), ['info', 'f_bank']],
+        [T.show_job, '', () => sh.job, v => set({ show: { job: v } }), ['info', 'f_job']],
+        [T.show_id, '', () => sh.id, v => set({ show: { id: v } }), ['info', 'f_id']],
+        [T.show_time, '', () => sh.time, v => set({ show: { time: v } }), ['info', 'f_time']],
       ])];
     },
     colors() {

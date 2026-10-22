@@ -35,6 +35,27 @@ Config.Locks = {
     info = false,
 }
 
+-- Force parts of the HUD on or off for everyone. Forced ones are locked in the /hud menu.
+-- 'player' lets each player choose, 'show' always shows it, 'hide' always hides it.
+Config.Elements = {
+    cash = 'player',
+    bank = 'player',
+    job = 'player',
+    id = 'player',
+    time = 'player',
+    voice = 'player',
+    compass = 'player',
+    street = 'player',
+    postal = 'player',
+    navigation = 'player',
+    weapon = 'player',
+}
+
+-- Where player settings and profiles are saved.
+-- 'database' saves them to your database by license, so they follow the player to any PC.
+-- 'local' keeps them on the player's PC only.
+Config.SaveSettings = 'database'
+
 -- How often the HUD reads game data, in milliseconds. Lower = smoother, higher = cheaper.
 Config.UpdateRate = {
     vehicle = 100,

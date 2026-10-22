@@ -920,8 +920,19 @@ function hexA(hex, a) {
   const n = parseInt(m[1], 16);
   return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`;
 }
+function applyForced(s) {
+  for (const f of state.forced || []) {
+    let t = s;
+    for (let i = 0; i < f.path.length - 1; i++) {
+      if (typeof t[f.path[i]] !== 'object' || !t[f.path[i]]) t[f.path[i]] = {};
+      t = t[f.path[i]];
+    }
+    t[f.path[f.path.length - 1]] = f.value;
+  }
+  return s;
+}
 function applySettings(s) {
-  state.settings = merge(DEFAULTS, s);
+  state.settings = applyForced(merge(DEFAULTS, s));
   if (state.mapFixed && (!state.mapMovable || sameMap(state.settings.layout.map, JSON.parse(BUILTIN_MAP)))) state.settings.layout.map = deep(DEFAULTS.layout.map);
   const root = document.documentElement.style;
   root.setProperty('--accent', state.settings.colors.accent);
@@ -979,6 +990,7 @@ const handlers = {
     }
     state.features = d.features || {};
     state.locks = d.locks || {};
+    state.forced = Array.isArray(d.forced) ? d.forced : [];
     document.body.style.display = '';
     applySettings(d.settings || {});
   },
