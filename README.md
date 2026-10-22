@@ -6,15 +6,6 @@ HUD and speedometer with an in-game settings menu, layout editor, profiles and s
 
 Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
 
-<img width="1920" height="1080" alt="hud11" src="https://github.com/user-attachments/assets/63aebefc-42d2-48e8-a67f-aee67630e5ba" />
-<img width="1920" height="1080" alt="hud" src="https://github.com/user-attachments/assets/45f1d970-83f9-4388-a00b-926517bc3e63" />
-<img width="1920" height="1080" alt="hud6" src="https://github.com/user-attachments/assets/88c26d3e-a5f9-4f00-8afa-948bdfd07e78" />
-<img width="1920" height="1080" alt="hud7" src="https://github.com/user-attachments/assets/3d7825c5-cf66-4e93-bd97-af5024fbfe90" />
-<img width="1920" height="1080" alt="hud8" src="https://github.com/user-attachments/assets/c80b8af8-acab-44d2-8c1a-5bae869be8fe" />
-<img width="1920" height="1080" alt="hud9" src="https://github.com/user-attachments/assets/4f1f913f-e3e0-471a-a34e-b3418a76872f" />
-<img width="1920" height="1080" alt="hud10" src="https://github.com/user-attachments/assets/28105859-ef91-4e17-ac2b-27ed9145f63b" />
-<img width="1920" height="1080" alt="hud11" src="https://github.com/user-attachments/assets/720f6872-ccb3-4dea-a3c3-2309da7d93dd" />
-
 ## Features
 
 - `/hud` settings menu, players set everything themselves (you can lock any group in the config)
@@ -34,7 +25,8 @@ Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
 - Weapon and ammo display
 - Streamer mode (blurs money and server ID) and cinematic mode with letterbox bars
 - Odometer when jg-vehiclemileage is running
-- Exports for custom statuses (drunk, stress or anything else)
+- Stress from shooting and speeding, with blur and camera shake at high stress
+- Exports for custom statuses (drunk or anything else)
 
 ## Requirements
 
@@ -77,6 +69,7 @@ Everything is in `config.lua`.
 - `Config.Postal.map` picks the postal set (`new`, `old` or `ocrp`). Use the one that matches the postal map your server streams.
 - `Config.Minimap.movable` lets players move and resize the minimap in the layout editor. Set it to `false` to keep it in GTA's default spot.
 - `Config.Crash.minG` sets how hard a hit has to be for the crash pulse.
+- `Config.Stress` sets how stress is gained, which jobs never gain it, and the blur and shake effects. Set `enabled = false` if another script handles stress.
 - `Config.HideMinimapBars` hides GTA's health and armor bars under the map. Use `'off'` if you stream an edited `minimap.gfx`.
 
 ### jg-vehiclemileage
@@ -85,6 +78,25 @@ Detected automatically and shown as an odometer on the speedometer. Hide jg's ow
 
 - Set `Config.ShowMileage = false` in jg-vehiclemileage's `config.lua` (mileage still tracks and saves), or
 - In `jg-vehiclemileage/client/client.lua`, change `if GetResourceState("jg-hud") == "started" then` to `if GetResourceState("jg-hud") == "started" or GetResourceState("vexxd_hud") == "started" then`
+
+### Stress
+
+Built in, so you don't lose stress when you remove qbx_hud or qb-hud. If either of those is still running, the HUD leaves stress to it.
+
+- Shooting has a chance to add stress on each shot. Fuel cans and fire extinguishers don't count.
+- Driving over the speed limit in `Config.Stress.speeding` adds stress every few seconds. Boats, aircraft, bicycles and trains don't count.
+- Jobs in `noGainJobs` (and Qbox / QBCore job types in `noGainJobTypes`) never gain stress.
+- Scripts that already use `hud:server:GainStress` and `hud:server:RelieveStress` (food, drinks, smoking and so on) keep working.
+- Qbox and QBCore save stress in player metadata like their own HUDs do. ESX saves it in the `vexxd_hud_stress` table, created on first start.
+
+Server exports:
+
+```lua
+exports.vexxd_hud:GetStress(source)
+exports.vexxd_hud:SetStress(source, 50)
+exports.vexxd_hud:AddStress(source, 10)
+exports.vexxd_hud:RemoveStress(source, 10)
+```
 
 ### Round minimap
 

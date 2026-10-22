@@ -103,6 +103,46 @@ Config.Navigation = {
     distanceScale = 0.1,         -- GTA reports distance to the next turn in tenths of a meter
 }
 
+-- Stress. Goes up from shooting and speeding, and other scripts can raise or lower it
+-- with the usual hud:server:GainStress / hud:server:RelieveStress events.
+-- Turns itself off when qbx_hud or qb-hud is running. Set enabled = false if another script handles stress.
+-- Qbox and QBCore keep stress in player metadata. ESX keeps it in the vexxd_hud_stress table.
+Config.Stress = {
+    enabled = true,
+    notify = true,                   -- "You feel more stressed" / "You feel more relaxed"
+    noGainJobs = { 'police', 'sheriff' }, -- these jobs never gain stress
+    noGainJobTypes = { 'leo' },      -- Qbox / QBCore job types that never gain stress
+
+    shooting = {
+        enabled = true,
+        chance = 0.1,                -- chance per shot (0.1 = 10%)
+        amount = { 1, 5 },           -- stress added, random between these
+        ignore = { `WEAPON_PETROLCAN`, `WEAPON_HAZARDCAN`, `WEAPON_FIREEXTINGUISHER` },
+    },
+
+    speeding = {
+        enabled = true,
+        buckled = false,             -- mph to start gaining stress with a seatbelt on, false = never
+        unbuckled = 50,              -- mph to start gaining stress without a seatbelt, false = never
+        amount = { 1, 3 },
+        every = 10,                  -- seconds between checks while driving that fast
+    },
+
+    -- Blur and camera shake that come more often the higher stress gets.
+    effects = {
+        enabled = true,
+        shake = 0.08,                -- camera shake strength
+        ragdollAtMax = true,         -- at 100 stress the player stumbles and falls when on foot
+        levels = {
+            { min = 50, every = { 50, 60 }, blur = 1500 }, -- every = seconds between effects, blur = ms
+            { min = 60, every = { 40, 50 }, blur = 2000 },
+            { min = 70, every = { 30, 40 }, blur = 2500 },
+            { min = 80, every = { 20, 30 }, blur = 2700 },
+            { min = 90, every = { 15, 20 }, blur = 3000 },
+        },
+    },
+}
+
 -- Hides GTA's own health/armor bars under the minimap.
 -- 'lua' runs a small per-frame call while the map is visible.
 -- 'off' if you stream an edited minimap.gfx instead (no per-frame cost).

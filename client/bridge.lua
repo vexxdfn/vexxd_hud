@@ -113,6 +113,11 @@ elseif started('es_extended') then
 
         Bridge.loaded = true
         esxInfo(pd)
+
+        if Config.Stress?.enabled then
+            emit('status', { stress = LocalPlayer.state.stress or 0 })
+        end
+
         emit('loaded')
     end
 
@@ -122,6 +127,10 @@ elseif started('es_extended') then
         if account.name == 'money' then emit('info', { cash = account.money }) end
         if account.name == 'bank' then emit('info', { bank = account.money }) end
     end)
+    if Config.Stress?.enabled then
+        statebag('stress')
+    end
+
     RegisterNetEvent('esx:setJob', function(job) emit('info', { job = job.label or '', grade = job.grade_label or '' }) end)
     AddEventHandler('esx_status:onTick', function(data)
         local s = {}

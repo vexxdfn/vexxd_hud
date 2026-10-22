@@ -6,7 +6,7 @@ game 'gta5'
 name 'vexxd_hud'
 author 'Vexxd Scripts'
 description 'HUD and speedometer with in-game settings. discord.gg/TzNJ6Z92Y5 for support'
-version '1.1.0'
+version '1.2.0'
 
 dependencies {
     'ox_lib',
@@ -29,6 +29,7 @@ client_scripts {
     'client/vehicle.lua',
     'client/weapon.lua',
     'client/postal.lua',
+    'client/stress.lua',
     'client/api.lua',
 }
 
@@ -36,6 +37,7 @@ server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/main.lua',
     'server/settings.lua',
+    'server/stress.lua',
 }
 
 ui_page 'html/index.html'

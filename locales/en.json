@@ -181,5 +181,7 @@
   "menu_center": "Keep centered",
   "ui_buckle": "Buckle up",
   "belt_exit": "Unbuckle your seatbelt first",
-  "menu_w_belt": "Seatbelt warning"
+  "menu_w_belt": "Seatbelt warning",
+  "stress_gain": "You feel more stressed",
+  "stress_relief": "You feel more relaxed"
 }
