@@ -147,4 +147,4 @@ Icons available for custom statuses: `beer`, `flame`, `pill`, `bandage`, `bolt`,
 
 Looking for more scripts? Check out the full collection of paid scripts available on my Tebex store!
 
-🛒 [VEXXD SCRIPTS | Tebex Store](https://vexxd-scripts.tebex.store)
+🛒 [VEXXD SCRIPTS | Tebex Store](https://vexxdscripts.com)
