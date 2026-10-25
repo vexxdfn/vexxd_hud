@@ -1,7 +1,17 @@
 # HUD
 
 HUD and speedometer with an in-game settings menu, layout editor, profiles and share codes. Free and open source.
-
+<img width="1920" height="1080" alt="hud11" src="https://github.com/user-attachments/assets/de94e292-dc7d-4a97-9738-ba16613ddb12" />
+<img width="1920" height="1080" alt="hud10" src="https://github.com/user-attachments/assets/c75ec74b-f1a8-400a-83fb-ff84aa44d564" />
+<img width="1920" height="1080" alt="hud9" src="https://github.com/user-attachments/assets/a2532b1b-3930-4130-85a5-031f9dca1148" />
+<img width="1920" height="1080" alt="hud8" src="https://github.com/user-attachments/assets/707f0e07-2b10-4042-8848-b618d3451b63" />
+<img width="1920" height="1080" alt="hud7" src="https://github.com/user-attachments/assets/bd5d7049-a288-4354-a1a5-ebfc8cb89798" />
+<img width="1920" height="1080" alt="hud6" src="https://github.com/user-attachments/assets/03795d34-86f6-4eb1-8b1a-119cbee3a3a4" />
+<img width="1920" height="1080" alt="hud5" src="https://github.com/user-attachments/assets/2539fb17-f441-452f-a26f-a404bc070c91" />
+<img width="1920" height="1080" alt="hud4" src="https://github.com/user-attachments/assets/33947cf1-c004-4917-ad8c-5fcfd79622cd" />
+<img width="1920" height="1080" alt="hud3" src="https://github.com/user-attachments/assets/1548b00f-8d44-47b2-8167-b2a728b53977" />
+<img width="1920" height="1080" alt="hud2" src="https://github.com/user-attachments/assets/982e1110-59c7-47bd-a422-7aa331c844ca" />
+<img width="1920" height="1080" alt="hud1" src="https://github.com/user-attachments/assets/f98f5121-16c1-46e4-95e3-777026aa5d48" />
 ## Support
 
 Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
