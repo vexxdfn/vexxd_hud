@@ -46,6 +46,12 @@ end
 local function getStress(src)
     if framework == 'esx' then return esxStress[src] or 0 end
 
+    if framework == 'qbx' then
+        local live = tonumber(src) and Player(src).state.stress
+
+        if live ~= nil then return tonumber(live) or 0 end
+    end
+
     local player = getPlayer(src)
 
     return player and tonumber(player.PlayerData.metadata.stress) or 0

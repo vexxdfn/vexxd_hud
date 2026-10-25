@@ -981,7 +981,8 @@ const handlers = {
     if (state.settings && !state.mapMovable) state.settings.layout.map = deep(DEFAULTS.layout.map);
     if (state.settings) applyLayout('map');
   },
-  init(d) {
+  init(message) {
+    const d = message.data || message;
     if (d.defaults) { const nd = merge(DEFAULTS, d.defaults); for (const k in nd) DEFAULTS[k] = nd[k]; }
     if (d.mapFrame) setMapFrame(d.mapFrame);
     if (d.locale) {
@@ -994,7 +995,7 @@ const handlers = {
     document.body.style.display = '';
     applySettings(d.settings || {});
   },
-  settings(d) { applySettings(d.settings); },
+  settings(message) { const d = message.data || message; applySettings(d.settings || {}); },
   status(d) { Object.assign(state.status, d.data); renderStatus(); },
   customStatus(d) {
     const c = d.data;

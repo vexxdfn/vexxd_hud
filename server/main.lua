@@ -41,9 +41,9 @@ lib.callback.register('vexxd_hud:shareCode', function(source, settings)
 
     for _ = 1, 5 do
         local code = newCode()
-        local ok = MySQL.insert.await('INSERT IGNORE INTO `vexxd_hud_codes` (`code`, `settings`) VALUES (?, ?)', { code, encoded })
+        local affected = MySQL.update.await('INSERT IGNORE INTO `vexxd_hud_codes` (`code`, `settings`) VALUES (?, ?)', { code, encoded })
 
-        if ok and ok > 0 then return code end
+        if affected and affected > 0 then return code end
     end
 
     return nil

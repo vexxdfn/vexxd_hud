@@ -37,7 +37,6 @@ for name, mode in pairs(Config.Elements or {}) do
 end
 
 local useDatabase = Config.SaveSettings == 'database'
-
 function Hud.send(action, data)
     SendNUIMessage({ action = action, data = data })
 end
@@ -100,8 +99,12 @@ local function savedData()
     local localProfiles = decode(GetResourceKvpString('profiles'), {})
     local data = { settings = localSettings, profiles = localProfiles }
 
+
     if useDatabase then
-        local row = lib.callback.await('vexxd_hud:load', 5000)
+        local ok, row = pcall(function() return lib.callback.await('vexxd_hud:load', 10000) end)
+        if not ok then
+            row = nil
+        end
 
         if type(row) == 'table' then
             if type(row.settings) == 'table' then
@@ -149,7 +152,17 @@ local function persist(kind, value)
 end
 
 local function loadSettings()
-    return stripLocked(lib.table.deepclone(savedData().settings))
+    local data = savedData()
+    local profile = type(data.profiles) == 'table' and data.profiles[1] or nil
+    local settings, source
+    if type(data.settings) == 'table' and next(data.settings) then
+        settings, source = data.settings, 'last active settings'
+    elseif type(profile) == 'table' and type(profile.settings) == 'table' then
+        settings, source = profile.settings, 'newest saved profile: ' .. tostring(profile.name)
+    else
+        settings, source = {}, 'defaults (no saved settings/profile found)'
+    end
+    return stripLocked(lib.table.deepclone(settings or {}))
 end
 
 local function fullSettings(s)
@@ -232,6 +245,16 @@ RegisterNUICallback('profiles', function(data, cb)
         while #list > 10 do table.remove(list) end
 
         persist('profiles', list)
+        persist('settings', lib.table.deepclone(list[1].settings))
+    elseif data.op == 'load' and type(data.name) == 'string' then
+        for i, profile in ipairs(list) do
+            if profile.name == data.name and type(profile.settings) == 'table' then
+                if i > 1 then table.insert(list, 1, table.remove(list, i)) end
+                persist('profiles', list)
+                persist('settings', lib.table.deepclone(list[1].settings))
+                break
+            end
+        end
     elseif data.op == 'delete' then
         for i = #list, 1, -1 do
             if list[i].name == data.name then table.remove(list, i) end
@@ -246,13 +269,13 @@ end)
 RegisterNUICallback('shareCode', function(data, cb)
     if not features().shareCodes then return cb({}) end
 
-    cb({ code = lib.callback.await('vexxd_hud:shareCode', 2000, stripLocked(data.settings or {})) })
+    cb({ code = lib.callback.await('vexxd_hud:shareCode', 10000, stripLocked(data.settings or {})) })
 end)
 
 RegisterNUICallback('importCode', function(data, cb)
     if not features().shareCodes or type(data.code) ~= 'string' then return cb({}) end
 
-    local settings = lib.callback.await('vexxd_hud:importCode', 1000, data.code)
+    local settings = lib.callback.await('vexxd_hud:importCode', 10000, data.code)
 
     cb({ settings = settings and stripLocked(settings) or nil })
 end)

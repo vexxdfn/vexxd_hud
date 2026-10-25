@@ -25,43 +25,41 @@ end
 
 local function decode(raw)
     if not raw then return nil end
-
-    local ok, v = pcall(json.decode, raw)
-
-    return ok and type(v) == 'table' and v or nil
+    local ok, value = pcall(json.decode, raw)
+    return ok and type(value) == 'table' and value or nil
 end
 
 lib.callback.register('vexxd_hud:load', function(source)
     local id = license(source)
-
     if not id then return nil end
 
     local row = MySQL.single.await('SELECT `settings`, `profiles` FROM `vexxd_hud_settings` WHERE `license` = ?', { id })
-
     if not row then return {} end
 
-    return { settings = decode(row.settings), profiles = decode(row.profiles) }
+    return {
+        settings = decode(row.settings),
+        profiles = decode(row.profiles),
+    }
 end)
 
 RegisterNetEvent('vexxd_hud:save', function(kind, value)
     local src = source
-
     if not QUERY[kind] or type(value) ~= 'table' then return end
 
     local now = GetGameTimer()
     local key = src .. kind
-
     if lastSave[key] and now - lastSave[key] < 1000 then return end
-
     lastSave[key] = now
 
     local encoded = json.encode(value)
-
     if #encoded > 60000 then return end
 
     local id = license(src)
+    if not id then return end
 
-    if id then MySQL.prepare(QUERY[kind], { id, encoded }) end
+    pcall(function()
+        MySQL.update.await(QUERY[kind], { id, encoded })
+    end)
 end)
 
 AddEventHandler('playerDropped', function()

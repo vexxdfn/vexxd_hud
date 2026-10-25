@@ -108,7 +108,7 @@ Config.Navigation = {
 -- Turns itself off when qbx_hud or qb-hud is running. Set enabled = false if another script handles stress.
 -- Qbox and QBCore keep stress in player metadata. ESX keeps it in the vexxd_hud_stress table.
 Config.Stress = {
-    enabled = true,
+    enabled = false,
     notify = true,                   -- "You feel more stressed" / "You feel more relaxed"
     noGainJobs = { 'police', 'sheriff' }, -- these jobs never gain stress
     noGainJobTypes = { 'leo' },      -- Qbox / QBCore job types that never gain stress
@@ -142,6 +142,10 @@ Config.Stress = {
         },
     },
 }
+
+-- Hides GTA's own weapon icon and ammo count in the top right while a weapon is out.
+-- Only runs while armed. Set false if another script already hides them.
+Config.HideGameAmmo = true
 
 -- Hides GTA's own health/armor bars under the minimap.
 -- 'lua' runs a small per-frame call while the map is visible.

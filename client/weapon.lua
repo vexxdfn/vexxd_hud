@@ -33,24 +33,37 @@ local function run(weapon)
     local melee = GetWeaponDamageType(weapon) == 2
     local maxClip = melee and 0 or GetMaxAmmoInClip(ped, weapon, true)
     local last = {}
+    local hide = Config.HideGameAmmo
+    local nextRead = 0
 
     while cache.weapon == weapon do
-        local label = labelOf and labelOf(weapon) or ''
-        local clip, total = 0, 0
+        local now = GetGameTimer()
 
-        if not melee then
-            local _, inClip = GetAmmoInClip(ped, weapon)
+        if now >= nextRead then
+            nextRead = now + (melee and 1000 or 150)
+            local label = labelOf and labelOf(weapon) or ''
+            local clip, total = 0, 0
 
-            clip = inClip
-            total = math.max(0, GetAmmoInPedWeapon(ped, weapon) - inClip)
+            if not melee then
+                local _, inClip = GetAmmoInClip(ped, weapon)
+
+                clip = inClip
+                total = math.max(0, GetAmmoInPedWeapon(ped, weapon) - inClip)
+            end
+
+            if last.clip ~= clip or last.total ~= total or last.label ~= label then
+                last = { label = label, clip = clip, total = total, max = maxClip, melee = melee }
+                Hud.send('weapon', last)
+            end
         end
 
-        if last.clip ~= clip or last.total ~= total or last.label ~= label then
-            last = { label = label, clip = clip, total = total, max = maxClip, melee = melee }
-            Hud.send('weapon', last)
+        if hide then
+            HideHudComponentThisFrame(2)
+            DisplayAmmoThisFrame(false)
+            Wait(0)
+        else
+            Wait(nextRead - now)
         end
-
-        Wait(melee and 1000 or 150)
     end
 end
 

@@ -6,7 +6,7 @@ game 'gta5'
 name 'vexxd_hud'
 author 'Vexxd Scripts'
 description 'HUD and speedometer with in-game settings. discord.gg/TzNJ6Z92Y5 for support'
-version '1.2.0'
+version '1.2.1'
 
 dependencies {
     'ox_lib',

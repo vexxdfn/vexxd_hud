@@ -269,7 +269,20 @@
         const it = el(`<div class="pitem">${ico('layout-dashboard')}<span class="n"></span><span class="d">${p.date || ''}</span><button type="button" class="opt">${T.load}</button><button type="button" class="opt danger" aria-label="${T.delete}">${ico('trash')}</button></div>`);
         it.querySelector('.n').textContent = p.name;
         const [ld, del] = it.querySelectorAll('button');
-        ld.onclick = () => set(p.settings);
+        ld.onclick = async () => {
+          // Apply the selected profile locally, then explicitly persist it as active
+          // so Lua/MySQL restores the same HUD on the next connection.
+          set(p.settings);
+          if (IS_GAME) {
+            const r = await post('profiles', { op: 'load', name: p.name });
+            if (r?.list) { profiles = r.list; render(); }
+          } else {
+            try { localStorage.setItem('vexxd_hud_settings', JSON.stringify(S())); } catch (e) {}
+            const idx = profiles.findIndex(x => x.name === p.name);
+            if (idx > 0) profiles.unshift(profiles.splice(idx, 1)[0]);
+            try { localStorage.setItem('vexxd_hud_profiles', JSON.stringify(profiles)); } catch (e) {}
+          }
+        };
         del.onclick = async () => { profiles = profiles.filter(x => x !== p); await storeProfiles({ op: 'delete', name: p.name }); render(); };
         list.appendChild(it);
       }

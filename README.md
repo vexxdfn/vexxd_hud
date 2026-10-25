@@ -2,14 +2,6 @@
 
 HUD and speedometer with an in-game settings menu, layout editor, profiles and share codes. Free and open source.
 
-<img width="1920" height="1080" alt="hud11" src="https://github.com/user-attachments/assets/e6c7988c-8081-4de4-aba3-1596168c7d71" />
-<img width="1920" height="1080" alt="hud" src="https://github.com/user-attachments/assets/dd5369a8-b692-40e8-81d0-9c61e3c9391d" />
-<img width="1920" height="1080" alt="hud10" src="https://github.com/user-attachments/assets/eb4a3ee7-0cda-4583-8aa3-333deacfdb67" />
-<img width="1920" height="1080" alt="hud9" src="https://github.com/user-attachments/assets/34e4a0be-4746-4aba-be29-63f5f7bd2c58" />
-<img width="1920" height="1080" alt="hud8" src="https://github.com/user-attachments/assets/a30add03-a798-4e5f-b799-d2f83dc714bb" />
-<img width="1920" height="1080" alt="hud7" src="https://github.com/user-attachments/assets/a9d8883d-2a57-418d-ae2a-6edfe832db3a" />
-<img width="1920" height="1080" alt="hud6" src="https://github.com/user-attachments/assets/3b9ba09c-702a-475b-8c7d-b886995c36cf" />
-
 ## Support
 
 Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
@@ -78,6 +70,7 @@ Everything is in `config.lua`.
 - `Config.Minimap.movable` lets players move and resize the minimap in the layout editor. Set it to `false` to keep it in GTA's default spot.
 - `Config.Crash.minG` sets how hard a hit has to be for the crash pulse.
 - `Config.Stress` sets how stress is gained, which jobs never gain it, and the blur and shake effects. Set `enabled = false` if another script handles stress.
+- `Config.HideGameAmmo` hides GTA's own weapon icon and ammo count while a weapon is out. Set it to `false` if another script already does this.
 - `Config.HideMinimapBars` hides GTA's health and armor bars under the map. Use `'off'` if you stream an edited `minimap.gfx`.
 
 ### jg-vehiclemileage
@@ -147,4 +140,4 @@ Icons available for custom statuses: `beer`, `flame`, `pill`, `bandage`, `bolt`,
 
 Looking for more scripts? Check out the full collection of paid scripts available on my Tebex store!
 
-🛒 [VEXXD SCRIPTS | Tebex Store](https://vexxdscripts.com)
+🛒 [VEXXD SCRIPTS | Tebex Store](https://vexxd-scripts.tebex.store)
