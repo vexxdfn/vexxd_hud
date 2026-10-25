@@ -9,9 +9,10 @@
 @keyframes mwin { from { opacity: 0; transform: translateY(8px); } }
 .mw .rail { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 22px 14px 14px; }
 .mw .brand { display: grid; grid-template-columns: 42px 1fr; grid-template-rows: auto auto; column-gap: 12px; align-items: center; padding: 2px 8px 20px; }
+.mw .brand::after { content: 'Settings'; grid-column: 2; grid-row: 2; align-self: start; font-size: 13px; font-style: normal; line-height: 1.1; color: var(--mut); }
 .mw .brand .mk { grid-row: 1 / 3; display: grid; place-items: center; color: #fff; font-size: 22px; width: 42px; height: 42px; border-radius: 13px; background: linear-gradient(160deg, #ff6b6b, var(--accent) 55%, #b91c1c); box-shadow: 0 8px 24px rgba(239,68,68,.35), inset 0 1px 0 rgba(255,255,255,.35); }
 .mw .brand b { font: 800 24px 'Archivo'; font-stretch: 78%; line-height: 1; }
-.mw .brand span { font-size: 13px; color: var(--mut); }
+
 .mw .nav-i { position: relative; display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border: 0; border-radius: 13px; background: none; width: 100%; text-align: left; font: 500 14.5px var(--mf); color: #a8aeb7; cursor: pointer; }
 .mw .nav-i .ico { font-size: 18px; }
 .mw .nav-i:hover { color: #fff; background: rgba(255,255,255,.04); }

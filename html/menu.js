@@ -60,7 +60,7 @@
   ];
 
   const root = el(`<div id="menu"><div class="shade"></div><div class="mw">
-    <div class="rail"><div class="brand"><i class="mk">${ico('gauge')}</i><b>${T.title}</b><span>${T.subtitle}</span></div><div class="navs"></div><div class="grow"></div>
+    <div class="rail"><div class="brand"><i class="mk">${ico('gauge')}</i><b>${T.title}</b></div><div class="navs"></div><div class="grow"></div>
       <div class="foot"><span>${T.close}</span><kbd>${T.esc}</kbd></div></div>
     <div class="body"><div class="head"><div><h2></h2><p></p></div><button class="x" type="button" aria-label="${T.close}">${ico('x')}</button></div><div class="scroll"></div></div>
   </div></div>`);
@@ -476,7 +476,6 @@
 
   function relabel() {
     root.querySelector('.brand b').textContent = T.title;
-    root.querySelector('.brand span').textContent = T.subtitle;
     root.querySelector('.foot span').textContent = T.close;
     navs.querySelectorAll('.nav-i').forEach(b => { b.querySelector('span:last-child').textContent = T['s_' + b.dataset.s]; });
     if (root.classList.contains('open')) render();
