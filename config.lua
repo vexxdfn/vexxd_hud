@@ -8,9 +8,16 @@ Config.Command = 'hud'
 Config.Defaults = {
     theme = 'instrument',        -- 'instrument', 'float' or 'panel'
     unit = 'mph',                -- 'mph' or 'kmh'
-    statusStyle = 'gauges',      -- 'gauges', 'slim', 'rings', 'bars' or 'minimal'
+    statusStyle = 'gauges',      -- 'gauges', 'slim', 'rings', 'bars', 'minimal', 'hex', 'pills', 'iconfill', 'numbers', 'cells', 'arcs', 'tiles' or 'dots'
+    statusLayout = 'row',        -- 'row', 'column', 'grid' or 'map' (stacked next to the minimap)
+    speedoVariant = 'default',   -- 'default', 'dark', 'glass', 'light', 'carbon', 'brushed', 'frosted', 'neon' or 'wood'
+    numFont = 'default',         -- 'default', 'condensed', 'wide', 'rounded', 'mono', 'digital', 'sport', 'block',
+                                 -- 'tech', 'racing', 'poster', 'extended', 'scifi' or 'terminal'
     vehicle = {
-        car = { speedo = 'dial' },   -- 'dial' (instrument), 'tech', 'analog', 'cluster', 'apex', 'linear' or 'hud' (windshield)
+        -- 'dial', 'tech', 'analog', 'cluster', 'apex', 'linear', 'hud' (windshield), 'supercar', 'retro', 'race', 'muscle',
+        -- 'ev', 'moto', 'neon', 'minimal', 'chrono', 'fighter', 'split', 'euro', 'pixel', 'orb', 'drift',
+        -- 'vintage', 'truck' or 'jdm'
+        car = { speedo = 'dial' },
         ev = { speedo = 'dial' },
         bike = { speedo = 'linear' },
     },
@@ -33,6 +40,7 @@ Config.Locks = {
     layout = false,
     map = false,
     info = false,
+    font = false,
 }
 
 -- Force parts of the HUD on or off for everyone. Forced ones are locked in the /hud menu.
@@ -108,7 +116,7 @@ Config.Navigation = {
 -- Turns itself off when qbx_hud or qb-hud is running. Set enabled = false if another script handles stress.
 -- Qbox and QBCore keep stress in player metadata. ESX keeps it in the vexxd_hud_stress table.
 Config.Stress = {
-    enabled = false,
+    enabled = true,
     notify = true,                   -- "You feel more stressed" / "You feel more relaxed"
     noGainJobs = { 'police', 'sheriff' }, -- these jobs never gain stress
     noGainJobTypes = { 'leo' },      -- Qbox / QBCore job types that never gain stress

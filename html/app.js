@@ -5,6 +5,7 @@ const L = {
   mph: 'MPH', kmh: 'KM/H', kts: 'KTS', rpm: 'RPM', power: 'POWER', regen: 'REGEN', cruise: 'CRUISE',
   heading: 'HDG', airspeed: 'IAS', altitude: 'ALT', gear_down: 'GEAR DN', gear_up: 'GEAR UP', throttle: 'THROTTLE', id: 'ID',
   mi: 'mi', km: 'km', ft: 'ft', m: 'm', min: 'min', arrive: 'Arriving', then: 'then',
+  speed: 'SPEED', fuel: 'FUEL', gear: 'GEAR',
   buckle: 'Buckle up', fwd: 'FWD', rev: 'REV', postal: 'Postal', odo: 'ODO', launch: 'LAUNCH', reload: 'RELOAD', zero60: '0-60', zero100: '0-100', top_speed: 'New top speed',
 };
 
@@ -22,6 +23,10 @@ const DEFAULTS = {
   unit: 'mph',
   fuelDisplay: 'percent',
   statusStyle: 'gauges',
+  speedoVariant: 'default',
+  speedoOpts: { needle: 'default', ticks: 'all', rpm: true, fuel: true, gear: true, lamps: true, glow: true },
+  statusLayout: 'row',
+  numFont: 'default',
   mapShape: 'square',
   mapOnFoot: true,
   compass: true,
@@ -162,21 +167,57 @@ function weaponLift(name, l) {
   return host.offsetHeight * sp.s * (state.settings.uiScale || 1) + 24;
 }
 
+let statusBox = null;
+
+/** Keeps the voice indicator beside the status stack when that stack sits next to the minimap. */
+function voiceByMap(w) {
+  if (!statusBox || state.settings.statusLayout !== 'map' || W.map?.classList.contains('off') || stage.classList.contains('editing')) return false;
+  const vl = layoutFor('voice'), ui = state.settings.uiScale || 1;
+  w.style.left = `${(statusBox.right + 10).toFixed(1)}px`;
+  w.style.top = `${statusBox.bottom.toFixed(1)}px`;
+  w.style.setProperty('--ox', '0%');
+  w.style.setProperty('--oy', '100%');
+  w.style.transform = `translate(0, -100%) scale(${(vl.s * ui).toFixed(3)})`;
+  w.style.setProperty('--wo', vl.o);
+  return true;
+}
+
+/** Places the status stack right next to the minimap. Returns false when the normal layout should be used. */
+function statusByMap(w) {
+  const m = W.map;
+  if (state.settings.statusLayout !== 'map' || !m || m.classList.contains('off') || stage.classList.contains('editing')) return false;
+  const ml = layoutFor('map'), ui = state.settings.uiScale || 1, sc = ml.s * ui;
+  const SW = stage.offsetWidth || 1920, mw = m.offsetWidth * sc, mh = m.offsetHeight * sc;
+  const left = ml.ax * SW + ml.dx - ml.ax * mw, top = ml.ay * 1080 + ml.dy - ml.ay * mh;
+  const sl = layoutFor('status');
+  statusBox = { right: left + mw + 12 + w.offsetWidth * sl.s * ui, bottom: top + mh };
+  w.style.left = `${(left + mw + 12).toFixed(1)}px`;
+  w.style.top = `${(top + mh).toFixed(1)}px`;
+  w.style.setProperty('--ox', '0%');
+  w.style.setProperty('--oy', '100%');
+  w.style.transform = `translate(0, -100%) scale(${(sl.s * ui).toFixed(3)})`;
+  w.style.setProperty('--wo', sl.o);
+  return true;
+}
+
 function applyLayout(name) {
   const w = W[name], l = layoutFor(name);
   if (!w || !l) return;
+  if (name === 'status' && statusByMap(w)) { if (W.voice) applyLayout('voice'); return; }
+  if (name === 'voice' && voiceByMap(w)) return;
   w.style.left = `calc(${l.ax * 100}% + ${l.dx}px)`;
   w.style.top = `calc(${l.ay * 100}% + ${l.dy - stackShift(name) - weaponLift(name, l)}px)`;
   w.style.setProperty('--ox', `${l.ax * 100}%`);
   w.style.setProperty('--oy', `${l.ay * 100}%`);
   w.style.transform = `translate(${-l.ax * 100}%, ${-l.ay * 100}%) scale(${(l.s * (state.settings.uiScale || 1)).toFixed(3)})`;
   w.style.setProperty('--wo', l.o);
-  if (name === 'map') reportMap();
+  if (name === 'map') { reportMap(); if (state.settings.statusLayout === 'map') applyLayout('status'); }
 }
 function statNode(k, icon, color) {
   return el(`<div class="st cutp" data-k="${k}" style="--c: ${color}">
     <svg class="ring" viewBox="0 0 46 46"><circle class="bg" cx="23" cy="23" r="20"/><circle class="fg" cx="23" cy="23" r="20" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/></svg>
-    ${icon}<div class="bar"><i></i></div><span class="val tnum">100</span><div class="pill"><i></i></div>
+    <svg class="arc" viewBox="0 0 46 26"><path class="ab" d="M5 23 A18 18 0 0 1 41 23"/><path class="af" d="M5 23 A18 18 0 0 1 41 23" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/></svg>
+    ${icon}<span class="ifill">${icon}</span><div class="bar"><i></i></div><span class="val tnum">100</span><div class="pill"><i></i></div><div class="cells"><i></i><i></i><i></i><i></i><i></i></div>
   </div>`);
 }
 
@@ -203,10 +244,15 @@ function paintStat(st, v, visible, low) {
   st.querySelector('.fg').style.strokeDashoffset = 100 - v;
   st.querySelector('.bar i').style.width = v + '%';
   st.querySelector('.bar i').style.setProperty('--h', v + '%');
+  st.style.setProperty('--h', v + '%');
   st.querySelector('.pill i').style.width = v + '%';
   st.querySelector('.val').textContent = Math.round(v);
+  st.querySelector('.af').style.strokeDashoffset = 100 - v;
+  const lit = Math.ceil(v / 20);
+  st.querySelectorAll('.cells i').forEach((c, i) => c.classList.toggle('on', i < lit));
 }
 
+const STATUS_LAYOUTS = ['row', 'column', 'grid', 'map'];
 const vitalsOn = () => state.settings.theme !== 'panel' && state.settings.vitalsOnMap;
 
 function renderVitals() {
@@ -222,8 +268,13 @@ function renderVitals() {
 
 function renderStatus() {
   const w = W.status;
-  const cls = `w status ${state.settings.statusStyle}`;
-  if (w.className !== cls) w.className = cls;
+  const lay = STATUS_LAYOUTS.includes(state.settings.statusLayout) ? state.settings.statusLayout : 'row';
+  const cls = `w status ${state.settings.statusStyle} lay-${lay}${lay === 'map' ? ' lockedw' : ''}`;
+  if (w._cls !== cls) {
+    const keep = ['sel', 'dragging'].filter(c => w.classList.contains(c));
+    w.className = cls + (keep.length ? ' ' + keep.join(' ') : '');
+    w._cls = cls;
+  }
   const vit = vitalsOn();
   for (const k of STATS) {
     const v = clamp(Math.round(state.status[k] ?? 0), 0, 100);
@@ -388,6 +439,7 @@ function renderMap() {
   const w = W.map;
   setCls(w, 'circle', state.mapCircle === true);
   setCls(w, 'off', state.onFoot && !state.settings.mapOnFoot);
+  if (state.settings.statusLayout === 'map') applyLayout('status');
   if (!IS_GAME) drawFakeMap();
   reportMap();
 }
@@ -513,6 +565,69 @@ const INDS = () => `<span class="ind l">${ico('arrow-big-left')}</span><span cla
 const SHIFT = () => `<div class="shl"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><b>${L.launch}</b></div>`;
 const ODO = () => `<span class="odo tnum"></span>`;
 const FUEL = () => `<span class="ico ficon">${ICONS['gas-station']}</span>`;
+
+const SEG7 = { 0: 'abcdef', 1: 'bc', 2: 'abdeg', 3: 'abcdg', 4: 'bcfg', 5: 'acdfg', 6: 'acdefg', 7: 'abc', 8: 'abcdefg', 9: 'abcdfg', '-': 'g' };
+const SEG7_PATH = {
+  a: 'M12 4 H48 L42 10 H18 Z', b: 'M50 6 V46 L44 42 V12 Z', c: 'M50 54 V94 L44 88 V58 Z', d: 'M12 96 H48 L42 90 H18 Z',
+  e: 'M10 54 V94 L16 88 V58 Z', f: 'M10 6 V46 L16 42 V12 Z', g: 'M14 50 L19 46 H41 L46 50 L41 54 H19 Z',
+};
+function seg7(n) {
+  const one = `<svg class="d7" viewBox="0 0 60 100">${Object.entries(SEG7_PATH).map(([k, d]) => `<path class="s ${k}" d="${d}"/>`).join('')}</svg>`;
+  return `<div class="seg7" data-seg7="${n}">${one.repeat(n)}</div>`;
+}
+function seg7Set(node, value) {
+  if (node._v === value) return;
+  node._v = value;
+  const n = +node.dataset.seg7, str = String(value).slice(-n).padStart(n, ' ');
+  [...node.children].forEach((d, i) => {
+    const on = SEG7[str[i]] || '';
+    if (d._c === on) return;
+    d._c = on;
+    for (const p of d.children) p.classList.toggle('on', on.includes(p.classList[1]));
+  });
+}
+
+/** Data hooks used by the newer speedometers so they share one driver. */
+function speedoHooks(root) {
+  const all = (s) => [...root.querySelectorAll(s)];
+  return {
+    arc: all('[data-arc]').map(n => [n, n.dataset.arc]),
+    w: all('[data-w]').map(n => [n, n.dataset.w]),
+    h: all('[data-h]').map(n => [n, n.dataset.h]),
+    rot: all('[data-rot]').map(n => [n, n.dataset.rot, +n.dataset.a0 || 0, +n.dataset.sw || 270]),
+    seg: all('[data-seg]').map(n => ({ n, src: n.dataset.seg, kids: [...n.children], from: +n.dataset.from || 0, lit: -1 })),
+    seg7: all('[data-seg7]'),
+    tape: all('[data-tape]').map(n => [n, +n.dataset.step, +n.dataset.px, +n.dataset.top]),
+    prnd: all('.prnd b'),
+    evr: all('.evrange'),
+  };
+}
+
+function paintHooks(g, f, slow) {
+  const pick = (s) => s === 'rpm' ? f.rpm : s === 'spd' ? f.spd : s === 'temp' ? f.temp : f.fuel;
+  const want = (s) => slow ? s === 'fuel' || s === 'temp' : s !== 'fuel' && s !== 'temp';
+  for (const [n, s] of g.arc) if (want(s)) setStyle(n, 'strokeDashoffset', (100 - clamp(pick(s), 0, 1) * 100).toFixed(1));
+  for (const [n, s] of g.w) if (want(s)) setStyle(n, 'width', (clamp(pick(s), 0, 1) * 100).toFixed(1) + '%');
+  for (const [n, s] of g.h) if (want(s)) setStyle(n, 'height', (clamp(pick(s), 0, 1) * 100).toFixed(1) + '%');
+  for (const [n, s, a0, sw] of g.rot) if (want(s)) setStyle(n, 'transform', `rotate(${(a0 + clamp(pick(s), 0, 1.02) * sw).toFixed(1)}deg)`);
+  for (const sg of g.seg) {
+    if (!want(sg.src)) continue;
+    const lit = Math.round(clamp((pick(sg.src) - sg.from) / (1 - sg.from), 0, 1) * sg.kids.length);
+    if (lit === sg.lit) continue;
+    sg.lit = lit;
+    sg.kids.forEach((k, i) => setCls(k, 'on', i < lit));
+  }
+  if (!slow) {
+    for (const n of g.seg7) seg7Set(n, Math.max(0, Math.round(f.speed)));
+    for (const [n, step, px, top] of g.tape) setStyle(n, 'transform', `translateY(${(-((top - clamp(f.speed, 0, top)) / step * px) - px / 2).toFixed(1)}px)`);
+  }
+}
+
+function paintPrnd(g, gear) {
+  if (!g.prnd.length) return;
+  const cur = ['P', 'R', 'N', 'D'].includes(gear) ? gear : 'D';
+  for (const b of g.prnd) setCls(b, 'on', b.textContent === cur);
+}
 
 const SPEEDOS = {
   tech() {
@@ -686,7 +801,8 @@ function speedoKind() {
   if (t === 'cycle') return 'cycle';
   if (t === 'train') return 'train';
   if (t === 'air' || t === 'heli') return 'air';
-  return state.settings.vehicle?.[t]?.speedo || state.settings.speedo;
+  const k = state.settings.vehicle?.[t]?.speedo || state.settings.speedo;
+  return SPEEDOS[k] ? k : 'dial';
 }
 
 function buildSpeedo() {
@@ -714,7 +830,40 @@ function buildSpeedo() {
     cyD: root.querySelector('.cy-d'), cyT: root.querySelector('.cy-t'), trDir: root.querySelector('.tr-dir'), trBar: root.querySelector('.tr-bar i'),
     hnav: root.querySelector('.hnav'), spf: root.querySelector('.spf'), rpmf: root.querySelector('.rpmf'),
   };
+  if (root.classList.contains('gx')) R.g = speedoHooks(root);
+  const sc = speedoClasses(state.settings, kind).trim().split(/\s+/).filter(Boolean);
+  if (host._sc) host.classList.remove(...host._sc);
+  if (sc.length) host.classList.add(...sc);
+  host._sc = sc;
   applyLayout('speedo'); applyLayout('wind');
+}
+
+const lum = (h) => { const n = parseInt(h.slice(1), 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255; };
+const FINISHES = ['default', 'dark', 'glass', 'light', 'carbon', 'brushed', 'frosted', 'neon', 'wood'];
+
+/** Classes on a speedometer wrapper for the finish and the speedometer options. */
+const FACED = new Set(['analog', 'cluster', 'supercar', 'muscle', 'chrono', 'euro', 'drift', 'vintage', 'truck', 'jdm']);
+
+function speedoClasses(s = state.settings, kind) {
+  const flat = kind && !FACED.has(kind);
+  let v = FINISHES.includes(s.speedoVariant) ? s.speedoVariant : 'default';
+  const o = s.speedoOpts || {}, c = s.colors || {};
+  let cls = '';
+  let face = /^#[0-9a-f]{6}$/i.test(c.sp_face || '') ? c.sp_face : null;
+  if (flat && v === 'light') v = 'default';
+  if (flat && face && lum(face) > .6) face = null;
+  const lightFace = face && lum(face) > .6;
+  if (v !== 'default') cls += ` v-${v}`;
+  if (v !== 'default' || face) cls += ' vfin' + ((face ? lightFace : v === 'light') ? ' v-light' : ' vdk');
+  if (o.needle && o.needle !== 'default') cls += ` n-${o.needle}`;
+  if (o.ticks && o.ticks !== 'all') cls += ` t-${o.ticks}`;
+  if (o.rpm === false) cls += ' no-rpm';
+  if (o.fuel === false) cls += ' no-fuel';
+  if (o.gear === false) cls += ' no-gear';
+  if (o.lamps === false) cls += ' no-lamps';
+  if (o.glow === false) cls += ' no-glow';
+  for (const k of ['needle', 'face', 'numbers', 'glow']) if (/^#[0-9a-f]{6}$/i.test(c['sp_' + k] || '')) cls += ` c-${k}`;
+  return cls;
 }
 
 function lamp(list, cls) { for (const n of list) { const c = 'lamp ico ' + n.classList[2] + (cls ? ' ' + cls : ''); if (n.className !== c) n.className = c; } }
@@ -778,6 +927,12 @@ function renderSpeedo() {
     setCls(R.rl, 'regen', regen);
     setStyle(R.fbLine.firstElementChild, 'width', fuel.toFixed(0) + '%');
     setCls(R.fl, 'low', low2);
+  } else if (R.g) {
+    paintHooks(R.g, { fuel: fuel / 100, temp: v.temp != null ? clamp((v.temp - 40) / 80, 0, 1) : v.engineOn ? .5 : 0 }, true);
+    paintPrnd(R.g, v.gear);
+    setCls(R.root, 'low', low2);
+    setCls(R.root, 'regen', regen);
+    for (const n of R.g.evr) setText(n, v.range != null ? fmtDist(v.range) : '');
   } else if (kind === 'cycle') {
     setText(R.cyD, fmtDist(v.ride || 0));
     const s = v.rideTime || 0;
@@ -814,11 +969,13 @@ function drawGauge() {
   if (!R || !state.veh) return;
   const kind = R.kind, ev = state.veh.type === 'ev';
   const speed = tw.sp, rpm = tw.rpm, max = state.settings.unit === 'kmh' ? 320 : 200;
-  const digits = kind === 'tech' || kind === 'apex' || kind === 'boat' ? 3 : 0;
+  const digits = R.root.dataset.digits ? +R.root.dataset.digits : kind === 'tech' || kind === 'apex' || kind === 'boat' ? 3 : 0;
   const sp = padNum(speed, digits);
   for (const n of R.nums) setHTML(n, sp);
   drawShift(rpm);
-  if (kind === 'tech') {
+  if (R.g) {
+    paintHooks(R.g, { rpm, spd: speed / max, speed }, false);
+  } else if (kind === 'tech') {
     const n = Math.round(rpm * 32);
     if (R._n !== n) { R._n = n; R.segs.forEach((s2, i) => setCls(s2, 'on', i < n)); }
   } else if (kind === 'analog') {
@@ -931,6 +1088,13 @@ function applyForced(s) {
   }
   return s;
 }
+const NUM_FONTS = {
+  default: "'Chakra Petch', 'Geist', sans-serif", condensed: "'Barlow Condensed', sans-serif", wide: "'Orbitron', sans-serif",
+  rounded: "'Nunito', sans-serif", mono: "'JetBrains Mono', monospace", digital: "'Share Tech Mono', monospace", sport: "'Teko', sans-serif", block: "'Russo One', sans-serif",
+  tech: "'Rajdhani', sans-serif", racing: "'Audiowide', sans-serif", poster: "'Bebas Neue', sans-serif", extended: "'Michroma', sans-serif",
+  scifi: "'Oxanium', sans-serif", terminal: "'VT323', monospace",
+};
+
 function applySettings(s) {
   state.settings = applyForced(merge(DEFAULTS, s));
   if (state.mapFixed && (!state.mapMovable || sameMap(state.settings.layout.map, JSON.parse(BUILTIN_MAP)))) state.settings.layout.map = deep(DEFAULTS.layout.map);
@@ -941,6 +1105,11 @@ function applySettings(s) {
   stage.classList.toggle('theme-float', state.settings.theme !== 'panel');
   stage.classList.toggle('theme-inst', state.settings.theme === 'instrument');
   for (const k of STATS) { const c = state.settings.colors[k]; if (c) root.setProperty('--c-' + k, c); }
+  for (const k of ['needle', 'face', 'numbers', 'glow']) {
+    const c = state.settings.colors['sp_' + k];
+    if (/^#[0-9a-f]{6}$/i.test(c || '')) root.setProperty('--spc-' + k, c); else root.removeProperty('--spc-' + k);
+  }
+  root.setProperty('--f-num', NUM_FONTS[state.settings.numFont] || NUM_FONTS.default);
   speedoKey = null; R = null;
   fitStage();
   for (const n in W) applyLayout(n);
@@ -1059,5 +1228,5 @@ function boot() {
 }
 
 window.addEventListener('message', (e) => { const d = e.data; if (d && handlers[d.action]) handlers[d.action](d); });
-window.HUD = { state, handlers, applySettings, relayout: () => { for (const n in W) applyLayout(n); }, setCinematic, flash, DEFAULTS, W, merge, SPEEDOS };
+window.HUD = { state, handlers, applySettings, relayout: () => { for (const n in W) applyLayout(n); }, setCinematic, flash, DEFAULTS, W, merge, SPEEDOS, speedoHooks, paintHooks, paintPrnd, NUM_FONTS, speedoClasses, FINISHES, STATUS_LAYOUTS };
 boot();

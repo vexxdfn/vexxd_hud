@@ -269,6 +269,7 @@ local function run(vehicle)
     local crashDecel = Config.Crash.enabled and Config.Crash.minG * 9.81 or nil
     local tickRate = 1000 / Config.UpdateRate.vehicle
     local lastRange = nil
+    local lastTemp = nil
     local lastSent = {}
     lastOdo = nil
     local target = GetConvar('vexxd_hud:zeroTo', '') == '100' and 27.78 or 26.82
@@ -343,6 +344,8 @@ local function run(vehicle)
 
             lastRange = math.floor(fuelNow * range.perPct)
 
+            if kind ~= 'ev' then lastTemp = math.floor(GetVehicleEngineTemperature(vehicle)) end
+
             if hasMileage then
                 local km = Entity(vehicle).state.vehicleMileage
 
@@ -394,6 +397,7 @@ local function run(vehicle)
         end
 
         data.range = lastRange
+        data.temp = lastTemp
         data.odo = lastOdo
 
         local changed = false

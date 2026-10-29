@@ -2,13 +2,14 @@ Hud = { settings = {}, visible = true, nuiReady = false }
 
 local LOCK_KEYS = {
     theme = { 'theme' },
-    speedo = { 'speedo', 'vehicle' },
+    speedo = { 'speedo', 'vehicle', 'speedoVariant', 'speedoOpts' },
     unit = { 'unit' },
-    statusStyle = { 'statusStyle', 'vitalsOnMap' },
+    statusStyle = { 'statusStyle', 'statusLayout', 'vitalsOnMap' },
     colors = { 'colors' },
     layout = { 'layout', 'layoutByType', 'uiScale' },
     map = { 'mapShape', 'mapOnFoot' },
     info = { 'show' },
+    font = { 'numFont' },
 }
 
 local ELEMENTS = {
@@ -154,15 +155,15 @@ end
 local function loadSettings()
     local data = savedData()
     local profile = type(data.profiles) == 'table' and data.profiles[1] or nil
-    local settings, source
+    local settings = {}
+
     if type(data.settings) == 'table' and next(data.settings) then
-        settings, source = data.settings, 'last active settings'
+        settings = data.settings
     elseif type(profile) == 'table' and type(profile.settings) == 'table' then
-        settings, source = profile.settings, 'newest saved profile: ' .. tostring(profile.name)
-    else
-        settings, source = {}, 'defaults (no saved settings/profile found)'
+        settings = profile.settings
     end
-    return stripLocked(lib.table.deepclone(settings or {}))
+
+    return stripLocked(lib.table.deepclone(settings))
 end
 
 local function fullSettings(s)
@@ -209,6 +210,7 @@ local function sendInit()
             mapFrame = Hud.mapFrame,
         })
         Hud.applyMap()
+        Hud.resend()
     end)
 end
 
@@ -341,6 +343,13 @@ local function diff(kind, data)
 end
 
 Hud.diff = diff
+
+---Sends every value the HUD already has again, so a fresh page (resource restart, NUI reload) isn't blank.
+function Hud.resend()
+    for kind, data in pairs(last) do
+        if next(data) then Hud.send(kind, data) end
+    end
+end
 
 Bridge.on(function(kind, data)
     if kind == 'loaded' then

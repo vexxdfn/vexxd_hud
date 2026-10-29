@@ -44,6 +44,46 @@
     toggle_cine: 'Toggle cinematic now', done: 'Done', reset_widget: 'Reset', snap: 'Snap', scale: 'Size', opacity: 'Opacity',
     w_compass: 'Compass', w_street: 'Street', w_nav: 'Navigation', w_info: 'Player info', w_map: 'Minimap', w_status: 'Status',
     w_voice: 'Voice', w_speedo: 'Speedometer', w_wind: 'Windshield', w_weapon: 'Weapon', w_belt: 'Seatbelt warning', w_trip: 'Trip pops',
+    supercar: 'Supercar', retro: 'Retro LCD', race: 'Race wheel', muscle: 'Muscle twin', ev_screen: 'EV screen', moto: 'Moto TFT', neon: 'Neon',
+    minimal_spd: 'Minimal', chrono: 'Chrono', fighter: 'Fighter', split: 'Split', euro: 'Euro', pixel: 'Pixel', orb: 'Orb', drift: 'Drift', vintage: 'Vintage chrome', truck: 'Big rig', jdm: 'JDM',
+    variant: 'Speedometer finish', v_default: 'Default', v_dark: 'Dark', v_glass: 'Glass', v_light: 'Light',
+    num_font: 'Number font', f_default: 'Default', f_condensed: 'Condensed', f_wide: 'Wide', f_rounded: 'Rounded', f_mono: 'Mono', f_digital: 'Digital', f_sport: 'Sport', f_block: 'Block',
+    hex: 'Hexagons', pills: 'Pills', iconfill: 'Icon fill', numbers: 'Numbers',
+    palettes: 'Color presets',
+    p_ember: 'Ember', p_ice: 'Ice', p_toxic: 'Toxic', p_sunset: 'Sunset', p_royal: 'Royal', p_gold: 'Gold', p_ocean: 'Ocean', p_sakura: 'Sakura', p_mint: 'Mint', p_mono: 'Mono',
+    s_presets: 'Presets', s_presets_d: 'One-click looks. Each sets the speedometer, status style, theme, font and colors.',
+    hp_street: 'Street', hp_street_d: 'Clean instrument dial with gauges',
+    hp_supercar: 'Supercar', hp_supercar_d: 'Big tach ring and wide numbers',
+    hp_track: 'Track', hp_track_d: 'Race wheel display with bars',
+    hp_clean: 'Clean', hp_clean_d: 'Just the numbers, nothing extra',
+    hp_retro: 'Retro', hp_retro_d: '80s LCD dash in gold',
+    hp_cyber: 'Cyber', hp_cyber_d: 'Neon glow with hexagon stats',
+    hp_muscle: 'Muscle', hp_muscle_d: 'Chrome twin dials and pills',
+    hp_luxury: 'Luxury', hp_luxury_d: 'Chrono watch face in glass',
+    hp_arcade: 'Arcade', hp_arcade_d: 'Pixel speedometer and number stats',
+    hp_drift: 'Drift', hp_drift_d: 'Tach first, huge gear',
+    v_carbon: 'Carbon', v_brushed: 'Brushed metal', v_frosted: 'Frosted', v_neon: 'Neon edge', v_wood: 'Wood',
+    parts: 'Speedometer parts', needle_style: 'Needle', n_default: 'Default', n_slim: 'Slim', n_bold: 'Bold', n_glow: 'Glow',
+    ticks: 'Tick marks', t_all: 'All', t_major: 'Major only', t_none: 'None',
+    show_rpm: 'RPM', show_rpm_d: 'Rev bars, rings and tach needles', show_fuel: 'Fuel', show_fuel_d: 'Fuel bars, gauges and percent',
+    show_gear: 'Gear', show_gear_d: 'Gear number and gear boxes', show_lamps: 'Warning lights', show_lamps_d: 'Seatbelt, cruise, headlight and engine lights',
+    glow: 'Glow effects', glow_d: 'Neon glows and light shadows on the speedometer',
+    part_colors: 'Speedometer colors', part_colors_d: 'Leave a color on Auto to use the speedometer\'s own look.',
+    pc_needle: 'Needle', pc_face: 'Face', pc_numbers: 'Numbers', pc_glow: 'Outer glow', auto_color: 'Auto',
+    cells: 'Cells', arcs: 'Arcs', tiles: 'Tiles', dots: 'Dots',
+    status_layout: 'Status layout', l_row: 'Row', l_column: 'Column', l_grid: 'Grid', l_map: 'Next to minimap',
+    f_tech: 'Tech', f_racing: 'Racing', f_poster: 'Poster', f_extended: 'Extended', f_scifi: 'Sci-fi', f_terminal: 'Terminal',
+    p_crimson: 'Crimson', p_cyber: 'Cyber', p_desert: 'Desert', p_forest: 'Forest', p_lava: 'Lava', p_steel: 'Steel', p_candy: 'Candy', p_midnight: 'Midnight',
+    hp_cruiser: 'Cruiser', hp_cruiser_d: '50s chrome dial with arc stats',
+    hp_trucker: 'Trucker', hp_trucker_d: 'Big rig dash in brushed metal',
+    hp_touge: 'Touge', hp_touge_d: 'White-face tach and tile stats',
+    hp_carbon: 'Carbon', hp_carbon_d: 'Apex ring on carbon fiber',
+    hp_walnut: 'Walnut', hp_walnut_d: 'Chrono dial on a wood dash',
+    hp_nightrun: 'Night run', hp_nightrun_d: 'Neon edges and dot stats',
+    hp_frost: 'Frost', hp_frost_d: 'Frosted minimal with soft pills',
+    hp_terminal: 'Terminal', hp_terminal_d: 'Green LCD with cell stats',
+    hp_rally: 'Rally', hp_rally_d: 'Race wheel display on carbon',
+    hp_stealth: 'Stealth', hp_stealth_d: 'Dark dial, quiet colors',
   }, window.HUD_LOCALE_MENU || {});
 
   const ico = (n) => `<span class="ico">${ICONS[n] || ''}</span>`;
@@ -52,15 +92,16 @@
   const post = (n, d = {}) => IS_GAME ? fetch(`https://${GetParentResourceName()}/${n}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) }).then(r => r.json()).catch(() => null) : Promise.resolve(null);
 
   let locks = {}, section = 'speedo', vtab = 'car', profiles = [], code = '';
+  const so = () => S().speedoOpts || {};
   const locked = (k) => Array.isArray(k) ? k.some(x => !!locks[x]) : !!locks[k];
 
   const SECTIONS = [
-    ['speedo', 'gauge'], ['status', 'heart'], ['map', 'map'], ['info', 'user-circle'],
+    ['presets', 'layout-dashboard'], ['speedo', 'gauge'], ['status', 'heart'], ['map', 'map'], ['info', 'user-circle'],
     ['colors', 'palette'], ['layout', 'layout'], ['profiles', 'device-floppy'], ['modes', 'movie'],
   ];
 
   const root = el(`<div id="menu"><div class="shade"></div><div class="mw">
-    <div class="rail"><div class="brand"><i class="mk">${ico('gauge')}</i><b>${T.title}</b></div><div class="navs"></div><div class="grow"></div>
+    <div class="rail"><div class="brand"><i class="mk">${ico('gauge')}</i><b>${T.title}</b><span>${T.subtitle}</span></div><div class="navs"></div><div class="grow"></div>
       <div class="foot"><span>${T.close}</span><kbd>${T.esc}</kbd></div></div>
     <div class="body"><div class="head"><div><h2></h2><p></p></div><button class="x" type="button" aria-label="${T.close}">${ico('x')}</button></div><div class="scroll"></div></div>
   </div></div>`);
@@ -125,7 +166,7 @@
   }
 
   function paintThumb(r, kind) {
-    r.querySelectorAll('.num.sp').forEach(n => n.innerHTML = kind === 'linear' || kind === 'analog' || kind === 'cluster' || kind === 'hud' || kind === 'dial' ? '88' : '<span class="dim">0</span>88');
+    r.querySelectorAll('.num.sp').forEach(n => n.innerHTML = r.classList.contains('gx') || kind === 'linear' || kind === 'analog' || kind === 'cluster' || kind === 'hud' || kind === 'dial' ? '88' : '<span class="dim">0</span>88');
     r.querySelectorAll('.unit').forEach(n => n.textContent = 'MPH');
     r.querySelectorAll('.gear').forEach(n => n.textContent = '3');
     r.querySelectorAll('.pct').forEach(n => n.textContent = '64%');
@@ -142,19 +183,51 @@
     const fb = r.querySelector('.fl .fb i, .fuelline i'); if (fb) fb.style.width = '64%';
     r.querySelectorAll('.lamp.belt').forEach(n => n.classList.add('ok'));
     r.querySelectorAll('.lamp.lights, .lamp.engine').forEach(n => n.classList.add('on'));
+    r.querySelectorAll('.odo').forEach(n => { n.textContent = ''; });
+    if (r.classList.contains('gx')) { r.dataset.mode = 'car'; if (r.dataset.digits) r.querySelectorAll('.num.sp').forEach(n => n.innerHTML = '<span class="dim">0</span>88'); H.previewSpeedo(r); }
   }
 
   const THUMB_SCALE = { dial: .36, tech: .44, analog: .36, cluster: .3, apex: .34, linear: .4, hud: .36 };
+  const SIZES = { supercar: [380, 312], retro: [420, 200], race: [440, 220], muscle: [580, 250], ev: [420, 220], moto: [460, 210], neon: [340, 312], minimal: [300, 190],
+    chrono: [300, 330], fighter: [400, 270], split: [420, 280], euro: [300, 330], pixel: [400, 200], orb: [260, 330], drift: [380, 312], vintage: [320, 352], truck: [640, 300], jdm: [360, 392] };
+  for (const k in SIZES) THUMB_SCALE[k] = Math.min(220 / SIZES[k][0], 100 / SIZES[k][1]);
+  const SPEEDO_LIST = ['dial', 'tech', 'analog', 'cluster', 'apex', 'linear', 'hud', 'supercar', 'retro', 'race', 'muscle', 'ev', 'moto', 'neon', 'minimal', 'chrono', 'fighter', 'split', 'euro', 'pixel', 'orb', 'drift', 'vintage', 'truck', 'jdm'];
+  const SPEEDO_NAME = (k) => T[{ ev: 'ev_screen', minimal: 'minimal_spd' }[k] || k];
+  function thumb(k, variant) {
+    const look = variant ? { speedoVariant: variant, speedoOpts: {}, colors: {} } : S();
+    const inner = el(`<div class="inner spdwrap${H.speedoClasses(look, k)} ${S().theme !== 'panel' ? 'theme-float' : ''} ${S().theme === 'instrument' ? 'theme-inst' : ''}"></div>`);
+    inner.innerHTML = H.SPEEDOS[k](200, 'mph');
+    inner.style.transform = `translate(-50%, -50%) scale(${THUMB_SCALE[k]})`;
+    paintThumb(inner.firstElementChild, k);
+    requestAnimationFrame(() => fitThumb(inner));
+    return inner;
+  }
+  function fitThumb(inner) {
+    const box = inner.parentElement;
+    if (!box || !box.clientWidth) return;
+    inner.style.transformOrigin = '0 0';
+    inner.style.transform = 'none';
+    const o = inner.getBoundingClientRect();
+    let l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
+    for (const n of inner.querySelectorAll('*')) {
+      if (n.closest('defs, mask, clipPath')) continue;
+      const q = n.getBoundingClientRect();
+      if (!q.width && !q.height) continue;
+      l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); b = Math.max(b, q.bottom);
+    }
+    const k = inner.offsetWidth ? o.width / inner.offsetWidth : 1;
+    if (r <= l || b <= t || !k) return;
+    const s = Math.min((box.clientWidth - 20) * k / (r - l), (box.clientHeight - 14) * k / (b - t), .6);
+    const cx = ((l + r) / 2 - o.left) / k, cy = ((t + b) / 2 - o.top) / k;
+    inner.style.transform = `translate(${(-cx * s).toFixed(1)}px, ${(-cy * s).toFixed(1)}px) scale(${s.toFixed(3)})`;
+  }
   function speedoCards() {
     const box = el(`<div class="cards"></div>`);
     const cur = S().vehicle?.[vtab]?.speedo || S().speedo;
-    for (const k of ['dial', 'tech', 'analog', 'cluster', 'apex', 'linear', 'hud']) {
+    for (const k of SPEEDO_LIST) {
       const c = el(`<div class="card ${cur === k ? 'on' : ''} ${locked('speedo') ? 'dis' : ''}" tabindex="0" role="radio" aria-checked="${cur === k}">
-        <div class="thumb"><div class="inner ${S().theme !== 'panel' ? 'theme-float' : ''} ${S().theme === 'instrument' ? 'theme-inst' : ''}"></div></div><div class="cap"><span>${T[k]}</span>${ico('check')}</div></div>`);
-      const inner = c.querySelector('.inner');
-      inner.innerHTML = H.SPEEDOS[k](200, 'mph');
-      inner.style.transform = `translate(-50%, -50%) scale(${THUMB_SCALE[k]})`;
-      paintThumb(inner.firstElementChild, k);
+        <div class="thumb"></div><div class="cap"><span>${SPEEDO_NAME(k)}</span>${ico('check')}</div></div>`);
+      c.querySelector('.thumb').appendChild(thumb(k));
       const pick = () => { if (!locked('speedo')) set({ vehicle: { [vtab]: { speedo: k } } }); };
       c.onclick = pick;
       c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } };
@@ -163,15 +236,94 @@
     return box;
   }
 
+  const FONTS = ['default', 'condensed', 'wide', 'rounded', 'mono', 'digital', 'sport', 'block', 'tech', 'racing', 'poster', 'extended', 'scifi', 'terminal'];
+  const PALETTES = {
+    ember: { accent: '#ef4444', health: '#f87171', armor: '#60a5fa', hunger: '#fbbf24', thirst: '#38bdf8', stress: '#a78bfa', stamina: '#34d399', oxygen: '#67e8f9' },
+    ice: { accent: '#38bdf8', health: '#7dd3fc', armor: '#c7d2fe', hunger: '#e0f2fe', thirst: '#22d3ee', stress: '#a5b4fc', stamina: '#99f6e4', oxygen: '#bae6fd' },
+    toxic: { accent: '#84cc16', health: '#a3e635', armor: '#4ade80', hunger: '#facc15', thirst: '#2dd4bf', stress: '#bef264', stamina: '#22c55e', oxygen: '#5eead4' },
+    sunset: { accent: '#f97316', health: '#fb7185', armor: '#f472b6', hunger: '#fbbf24', thirst: '#fb923c', stress: '#c084fc', stamina: '#fdba74', oxygen: '#fda4af' },
+    royal: { accent: '#8b5cf6', health: '#f472b6', armor: '#a78bfa', hunger: '#fcd34d', thirst: '#818cf8', stress: '#c084fc', stamina: '#5eead4', oxygen: '#93c5fd' },
+    gold: { accent: '#eab308', health: '#fbbf24', armor: '#fde68a', hunger: '#f59e0b', thirst: '#fcd34d', stress: '#d6d3d1', stamina: '#facc15', oxygen: '#fef3c7' },
+    ocean: { accent: '#3b82f6', health: '#60a5fa', armor: '#93c5fd', hunger: '#38bdf8', thirst: '#06b6d4', stress: '#818cf8', stamina: '#2dd4bf', oxygen: '#67e8f9' },
+    sakura: { accent: '#ec4899', health: '#f9a8d4', armor: '#f0abfc', hunger: '#fda4af', thirst: '#fbcfe8', stress: '#e879f9', stamina: '#fecdd3', oxygen: '#f5d0fe' },
+    mint: { accent: '#10b981', health: '#6ee7b7', armor: '#5eead4', hunger: '#bef264', thirst: '#67e8f9', stress: '#a7f3d0', stamina: '#34d399', oxygen: '#99f6e4' },
+    mono: { accent: '#e5e7eb', health: '#f5f5f5', armor: '#d4d4d8', hunger: '#a1a1aa', thirst: '#e4e4e7', stress: '#71717a', stamina: '#d4d4d4', oxygen: '#fafafa' },
+    crimson: { accent: '#dc2626', health: '#ef4444', armor: '#e5e7eb', hunger: '#f97316', thirst: '#fca5a5', stress: '#b91c1c', stamina: '#fda4af', oxygen: '#fecaca' },
+    cyber: { accent: '#f0abfc', health: '#f472b6', armor: '#22d3ee', hunger: '#facc15', thirst: '#67e8f9', stress: '#c084fc', stamina: '#a3e635', oxygen: '#5eead4' },
+    desert: { accent: '#d97706', health: '#f87171', armor: '#a8a29e', hunger: '#fbbf24', thirst: '#7dd3fc', stress: '#c2410c', stamina: '#fde68a', oxygen: '#bae6fd' },
+    forest: { accent: '#16a34a', health: '#f87171', armor: '#86efac', hunger: '#ca8a04', thirst: '#5eead4', stress: '#65a30d', stamina: '#4ade80', oxygen: '#99f6e4' },
+    lava: { accent: '#ff5a1f', health: '#ff3b30', armor: '#ffb020', hunger: '#ffd166', thirst: '#ff8a5b', stress: '#e11d48', stamina: '#fdba74', oxygen: '#fed7aa' },
+    steel: { accent: '#94a3b8', health: '#f87171', armor: '#cbd5e1', hunger: '#fbbf24', thirst: '#7dd3fc', stress: '#a1a1aa', stamina: '#86efac', oxygen: '#e2e8f0' },
+    candy: { accent: '#f472b6', health: '#fb7185', armor: '#a5b4fc', hunger: '#fcd34d', thirst: '#67e8f9', stress: '#c4b5fd', stamina: '#6ee7b7', oxygen: '#bae6fd' },
+    midnight: { accent: '#6366f1', health: '#f87171', armor: '#818cf8', hunger: '#fbbf24', thirst: '#38bdf8', stress: '#a78bfa', stamina: '#34d399', oxygen: '#93c5fd' },
+  };
+  const PRESETS = {
+    street: { theme: 'instrument', speedo: ['dial', 'dial', 'linear'], statusStyle: 'gauges', speedoVariant: 'default', numFont: 'default', palette: 'ember' },
+    supercar: { theme: 'float', speedo: ['supercar', 'supercar', 'moto'], statusStyle: 'iconfill', speedoVariant: 'default', numFont: 'wide', palette: 'ember' },
+    track: { theme: 'float', speedo: ['race', 'race', 'moto'], statusStyle: 'bars', speedoVariant: 'dark', numFont: 'sport', palette: 'toxic' },
+    clean: { theme: 'float', speedo: ['minimal', 'minimal', 'minimal'], statusStyle: 'minimal', speedoVariant: 'default', numFont: 'rounded', palette: 'mono' },
+    retro: { theme: 'panel', speedo: ['retro', 'retro', 'retro'], statusStyle: 'numbers', speedoVariant: 'dark', numFont: 'digital', palette: 'gold' },
+    cyber: { theme: 'float', speedo: ['neon', 'neon', 'neon'], statusStyle: 'hex', speedoVariant: 'default', numFont: 'wide', palette: 'ice' },
+    muscle: { theme: 'instrument', speedo: ['muscle', 'ev', 'moto'], statusStyle: 'pills', speedoVariant: 'default', numFont: 'block', palette: 'sunset' },
+    luxury: { theme: 'instrument', speedo: ['chrono', 'ev', 'euro'], statusStyle: 'rings', speedoVariant: 'glass', numFont: 'condensed', palette: 'royal' },
+    arcade: { theme: 'panel', speedo: ['pixel', 'pixel', 'pixel'], statusStyle: 'numbers', speedoVariant: 'default', numFont: 'default', palette: 'sakura' },
+    drift: { theme: 'float', speedo: ['drift', 'split', 'moto'], statusStyle: 'slim', speedoVariant: 'dark', numFont: 'sport', palette: 'ember' },
+    cruiser: { theme: 'instrument', speedo: ['vintage', 'ev', 'moto'], statusStyle: 'arcs', speedoVariant: 'default', numFont: 'condensed', palette: 'desert' },
+    trucker: { theme: 'panel', speedo: ['truck', 'ev', 'linear'], statusStyle: 'cells', speedoVariant: 'brushed', numFont: 'tech', palette: 'steel' },
+    touge: { theme: 'float', speedo: ['jdm', 'jdm', 'moto'], statusStyle: 'tiles', speedoVariant: 'default', numFont: 'tech', palette: 'lava' },
+    carbon: { theme: 'float', speedo: ['apex', 'ev', 'moto'], statusStyle: 'slim', speedoVariant: 'carbon', numFont: 'scifi', palette: 'crimson' },
+    walnut: { theme: 'instrument', speedo: ['chrono', 'ev', 'euro'], statusStyle: 'rings', speedoVariant: 'wood', numFont: 'condensed', palette: 'gold' },
+    nightrun: { theme: 'float', speedo: ['split', 'ev', 'moto'], statusStyle: 'dots', speedoVariant: 'neon', numFont: 'racing', palette: 'cyber' },
+    frost: { theme: 'float', speedo: ['minimal', 'ev', 'minimal'], statusStyle: 'pills', speedoVariant: 'frosted', numFont: 'rounded', palette: 'ice' },
+    terminal: { theme: 'panel', speedo: ['retro', 'retro', 'pixel'], statusStyle: 'cells', speedoVariant: 'dark', numFont: 'terminal', palette: 'toxic' },
+    rally: { theme: 'float', speedo: ['race', 'race', 'moto'], statusStyle: 'tiles', speedoVariant: 'carbon', numFont: 'poster', palette: 'sunset' },
+    stealth: { theme: 'instrument', speedo: ['dial', 'ev', 'linear'], statusStyle: 'minimal', speedoVariant: 'dark', numFont: 'extended', palette: 'midnight' },
+  };
+  function presetPatch(p) {
+    const out = {};
+    if (!locked('theme')) out.theme = p.theme;
+    if (!locked('speedo')) { out.vehicle = { car: { speedo: p.speedo[0] }, ev: { speedo: p.speedo[1] }, bike: { speedo: p.speedo[2] } }; out.speedoVariant = p.speedoVariant; }
+    if (!locked('statusStyle')) out.statusStyle = p.statusStyle;
+    if (!locked('font')) out.numFont = p.numFont;
+    if (!locked('colors')) out.colors = Object.assign({ sp_needle: '', sp_face: '', sp_numbers: '', sp_glow: '' }, PALETTES[p.palette]);
+    return out;
+  }
   const ACCENTS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f3f4f6'];
   const STATC = { health: '#f87171', armor: '#60a5fa', hunger: '#fbbf24', thirst: '#38bdf8', stress: '#a78bfa', stamina: '#34d399', oxygen: '#67e8f9' };
   const STATI = { health: 'heart', armor: 'shield', hunger: 'meat', thirst: 'droplet', stress: 'brain', stamina: 'run', oxygen: 'lungs' };
 
   const VIEWS = {
+    presets() {
+      const box = el(`<div class="cards presets"></div>`);
+      for (const k in PRESETS) {
+        const p = PRESETS[k], P = PALETTES[p.palette];
+        const c = el(`<div class="card hp" tabindex="0" role="button" style="--pc:${P.accent}">
+          <div class="thumb"></div><div class="cap col"><span>${T['hp_' + k]}</span><small>${T['hp_' + k + '_d']}</small></div></div>`);
+        const t = thumb(p.speedo[0], p.speedoVariant);
+        t.style.setProperty('--accent', P.accent);
+        t.style.setProperty('--f-num', H.NUM_FONTS[p.numFont]);
+        c.querySelector('.thumb').appendChild(t);
+        const go = () => set(presetPatch(p));
+        c.onclick = go;
+        c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
+        box.appendChild(c);
+      }
+      return [group('', box)];
+    },
     speedo() {
       return [
         group('', opts('vtab', [['car', T.car, 'car'], ['ev', T.ev, 'bolt'], ['bike', T.bike, 'motorbike']], vtab, v => { vtab = v; render(); }, '_none')),
         group(T.s_speedo, speedoCards(), 'speedo'),
+        group(T.variant, opts('speedoVariant', H.FINISHES.map(f => [f, T['v_' + f]]), S().speedoVariant, v => set({ speedoVariant: v }), 'speedo'), 'speedo'),
+        group(T.needle_style, opts('needle', [['default', T.n_default], ['slim', T.n_slim], ['bold', T.n_bold], ['glow', T.n_glow]], so().needle || 'default', v => set({ speedoOpts: { needle: v } }), 'speedo'), 'speedo'),
+        group(T.ticks, opts('ticks', [['all', T.t_all], ['major', T.t_major], ['none', T.t_none]], so().ticks || 'all', v => set({ speedoOpts: { ticks: v } }), 'speedo'), 'speedo'),
+        group(T.parts, toggles([
+          [T.show_rpm, T.show_rpm_d, () => so().rpm !== false, v => set({ speedoOpts: { rpm: v } }), 'speedo'],
+          [T.show_fuel, T.show_fuel_d, () => so().fuel !== false, v => set({ speedoOpts: { fuel: v } }), 'speedo'],
+          [T.show_gear, T.show_gear_d, () => so().gear !== false, v => set({ speedoOpts: { gear: v } }), 'speedo'],
+          [T.show_lamps, T.show_lamps_d, () => so().lamps !== false, v => set({ speedoOpts: { lamps: v } }), 'speedo'],
+          [T.glow, T.glow_d, () => so().glow !== false, v => set({ speedoOpts: { glow: v } }), 'speedo'],
+        ]), 'speedo'),
         group(T.units, opts('unit', [['mph', 'MPH'], ['kmh', 'KM/H']], S().unit, v => set({ unit: v })), 'unit'),
         group(T.fuel_display, opts('fuelDisplay', [['percent', T.percent], ['range', T.range]], S().fuelDisplay, v => set({ fuelDisplay: v }))),
         toggles([
@@ -184,7 +336,13 @@
     status() {
       return [
         group(T.theme, opts('theme', [['instrument', T.instrument], ['float', T.float], ['panel', T.panel]], S().theme, v => set({ theme: v })), 'theme'),
-        group(T.status_style, opts('statusStyle', [['gauges', T.gauges], ['slim', T.slim], ['rings', T.rings], ['bars', T.bars_style], ['minimal', T.minimal]], S().statusStyle, v => set({ statusStyle: v })), 'statusStyle'),
+        group(T.status_style, opts('statusStyle', [['gauges', T.gauges], ['slim', T.slim], ['rings', T.rings], ['bars', T.bars_style], ['minimal', T.minimal], ['hex', T.hex], ['pills', T.pills], ['iconfill', T.iconfill], ['numbers', T.numbers], ['cells', T.cells], ['arcs', T.arcs], ['tiles', T.tiles], ['dots', T.dots]], S().statusStyle, v => set({ statusStyle: v })), 'statusStyle'),
+        group(T.status_layout, opts('statusLayout', H.STATUS_LAYOUTS.map(l => [l, T['l_' + l]]), S().statusLayout || 'row', v => set({ statusLayout: v }), 'statusStyle'), 'statusStyle'),
+        group(T.num_font, (() => {
+          const g = opts('numFont', FONTS.map(f => [f, T['f_' + f]]), S().numFont, v => set({ numFont: v }), 'font');
+          [...g.children].forEach((b, i) => { b.style.fontFamily = H.NUM_FONTS[FONTS[i]]; b.style.fontSize = '15px'; });
+          return g;
+        })(), 'font'),
         toggles([
           [T.vitals, T.vitals_d, () => S().vitalsOnMap, v => set({ vitalsOnMap: v }), 'statusStyle'],
           [T.autohide, T.autohide_d, () => S().autoHide, v => set({ autoHide: v })],
@@ -236,8 +394,23 @@
         grid.appendChild(r);
       }
       const reset = el(`<button type="button" class="opt" ${locked('colors') ? 'disabled' : ''}>${ico('refresh')}${T.reset_colors}</button>`);
-      reset.onclick = () => { const c = { accent: H.DEFAULTS.colors.accent }; for (const k in STATC) c[k] = STATC[k]; set({ colors: c }); };
-      return [group(T.accent, sw, 'colors'), group(T.stat_colors, grid), el('<div></div>').appendChild(reset).parentElement];
+      reset.onclick = () => { const c = { accent: H.DEFAULTS.colors.accent, sp_needle: '', sp_face: '', sp_numbers: '', sp_glow: '' }; for (const k in STATC) c[k] = STATC[k]; set({ colors: c }); };
+      const pal = el(`<div class="palettes"></div>`);
+      for (const k in PALETTES) {
+        const P = PALETTES[k], on = P.accent === cur && ['health', 'armor', 'hunger', 'thirst'].every(x => (S().colors[x] || STATC[x]) === P[x]);
+        const b = el(`<button type="button" class="pal ${on ? 'on' : ''}" ${locked('colors') ? 'disabled' : ''}><span class="dots">${['accent', 'health', 'armor', 'hunger', 'thirst'].map(x => `<i style="background:${P[x]}"></i>`).join('')}</span><span>${T['p_' + k]}</span></button>`);
+        b.onclick = () => set({ colors: Object.assign({}, P) });
+        pal.appendChild(b);
+      }
+      const parts = el(`<div class="stat-colors parts"></div>`);
+      for (const [k, icn] of [['needle', 'gauge'], ['face', 'steering-wheel'], ['numbers', 'typography'], ['glow', 'bolt']]) {
+        const v = S().colors['sp_' + k] || '';
+        const r = el(`<label class="sc ${v ? '' : 'auto'}" style="--c:${v || 'var(--faint, #636973)'}">${ico(icn)}<span>${T['pc_' + k]}</span><input type="color" value="${v || '#ffffff'}" aria-label="${T['pc_' + k]}" ${locked('colors') ? 'disabled' : ''}><button type="button" class="opt sm" ${locked('colors') || !v ? 'disabled' : ''}>${T.auto_color}</button></label>`);
+        r.querySelector('input').onchange = (e) => set({ colors: { ['sp_' + k]: e.target.value } });
+        r.querySelector('button').onclick = (e) => { e.preventDefault(); set({ colors: { ['sp_' + k]: '' } }); };
+        parts.appendChild(r);
+      }
+      return [group(T.palettes, pal, 'colors'), group(T.accent, sw, 'colors'), group(T.stat_colors, grid), group(T.part_colors, [el(`<p class="hint">${T.part_colors_d}</p>`), parts], 'colors'), el('<div></div>').appendChild(reset).parentElement];
     },
     layout() {
       const edit = el(`<button type="button" class="opt primary" ${locked('layout') ? 'disabled' : ''}>${ico('arrows-move')}${T.edit_layout}</button>`);
@@ -475,8 +648,10 @@
   });
 
   function relabel() {
-    root.querySelector('.brand b').textContent = T.title;
-    root.querySelector('.foot span').textContent = T.close;
+    root.querySelector('.brand > b').textContent = T.title;
+    root.querySelector('.brand > span').textContent = T.subtitle;
+    root.querySelector('.foot > span').textContent = T.close;
+    root.querySelector('.foot > kbd').textContent = T.esc;
     navs.querySelectorAll('.nav-i').forEach(b => { b.querySelector('span:last-child').textContent = T['s_' + b.dataset.s]; });
     if (root.classList.contains('open')) render();
   }

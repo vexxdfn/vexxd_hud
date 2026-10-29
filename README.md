@@ -1,17 +1,7 @@
 # HUD
 
 HUD and speedometer with an in-game settings menu, layout editor, profiles and share codes. Free and open source.
-<img width="1920" height="1080" alt="hud11" src="https://github.com/user-attachments/assets/de94e292-dc7d-4a97-9738-ba16613ddb12" />
-<img width="1920" height="1080" alt="hud10" src="https://github.com/user-attachments/assets/c75ec74b-f1a8-400a-83fb-ff84aa44d564" />
-<img width="1920" height="1080" alt="hud9" src="https://github.com/user-attachments/assets/a2532b1b-3930-4130-85a5-031f9dca1148" />
-<img width="1920" height="1080" alt="hud8" src="https://github.com/user-attachments/assets/707f0e07-2b10-4042-8848-b618d3451b63" />
-<img width="1920" height="1080" alt="hud7" src="https://github.com/user-attachments/assets/bd5d7049-a288-4354-a1a5-ebfc8cb89798" />
-<img width="1920" height="1080" alt="hud6" src="https://github.com/user-attachments/assets/03795d34-86f6-4eb1-8b1a-119cbee3a3a4" />
-<img width="1920" height="1080" alt="hud5" src="https://github.com/user-attachments/assets/2539fb17-f441-452f-a26f-a404bc070c91" />
-<img width="1920" height="1080" alt="hud4" src="https://github.com/user-attachments/assets/33947cf1-c004-4917-ad8c-5fcfd79622cd" />
-<img width="1920" height="1080" alt="hud3" src="https://github.com/user-attachments/assets/1548b00f-8d44-47b2-8167-b2a728b53977" />
-<img width="1920" height="1080" alt="hud2" src="https://github.com/user-attachments/assets/982e1110-59c7-47bd-a422-7aa331c844ca" />
-<img width="1920" height="1080" alt="hud1" src="https://github.com/user-attachments/assets/f98f5121-16c1-46e4-95e3-777026aa5d48" />
+
 ## Support
 
 Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
@@ -19,8 +9,13 @@ Join the Discord for support: https://discord.gg/TzNJ6Z92Y5
 ## Features
 
 - `/hud` settings menu, players set everything themselves (you can lock any group in the config)
-- 3 themes and 5 status styles (gauges, slim, rings, bars, minimal)
-- Speedometer styles per vehicle type: cars, electric, bikes, bicycles, boats, aircraft and trains
+- 20 one-click presets that set the speedometer, finish, status style, font and colors together
+- 25 speedometers to pick per vehicle type (car, electric, motorcycle), plus bicycle, boat, aircraft and train displays
+- 9 speedometer finishes: default, dark, glass, light, carbon, brushed metal, frosted, neon edge and wood
+- Speedometer options: needle style, tick marks, show or hide RPM, fuel, gear and warning lights, glow on or off
+- Speedometer colors: needle, face, numbers and outer glow, or leave them on Auto
+- 3 themes, 13 status styles and 4 status layouts (row, column, grid or stacked next to the minimap)
+- 14 number fonts and 18 color presets
 - Drag-and-drop layout editor with snapping, size and opacity per widget
 - Profiles, plus share codes so players can copy each other's setup
 - Settings save to your database, so players keep their setup on any PC
@@ -112,6 +107,16 @@ exports.vexxd_hud:RemoveStress(source, 10)
 ### Round minimap
 
 Works out of the box. The round mask texture ships in `stream/` (from ps-hud, GPL-3.0, see `licenses/`).
+
+## Translations
+
+Comes in English, Spanish, French, German and Portuguese. Set the language in your `server.cfg`:
+
+```
+setr ox:locale es
+```
+
+Use `en`, `es`, `fr`, `de` or `pt-br` (`pt` works too). To add another language, copy `locales/en.json`, translate it and name it after the language code.
 
 ## Exports
 
