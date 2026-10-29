@@ -1,6 +1,24 @@
 # HUD
 
 HUD and speedometer with an in-game settings menu, layout editor, profiles and share codes. Free and open source.
+<img width="2560" height="1440" alt="hudpreset" src="https://github.com/user-attachments/assets/4af76000-1e81-499e-93b5-3e06e3058438" />
+<img width="2560" height="1440" alt="hudspeedometer" src="https://github.com/user-attachments/assets/ef0f74ab-9e4e-42ec-97a4-0d7d6e39e65a" />
+<img width="2555" height="1440" alt="hudspeedometer1" src="https://github.com/user-attachments/assets/7414b348-82d1-45ca-9930-bb0439abefc2" />
+<img width="2560" height="1440" alt="hudspeedometer2" src="https://github.com/user-attachments/assets/555db5cf-5ed4-4083-ad92-53897fc789d2" />
+<img width="2560" height="1440" alt="hudspeedometer3" src="https://github.com/user-attachments/assets/b9830841-3b29-4db8-b3a5-08152651c160" />
+<img width="2553" height="1440" alt="hudspeedometer4" src="https://github.com/user-attachments/assets/5307796e-96f9-4d5c-8a50-3f349c4cba8c" />
+<img width="2560" height="1440" alt="hudlookstatus" src="https://github.com/user-attachments/assets/6728fa5b-5ec9-4583-92a6-dd81d08dc67b" />
+<img width="2561" height="1440" alt="hudmapnav" src="https://github.com/user-attachments/assets/85b0085f-80e6-4252-b354-b41f8b8bc9c3" />
+<img width="2562" height="1440" alt="hudplayerinfo" src="https://github.com/user-attachments/assets/378c0ac1-6246-4482-860d-d95065ec66e7" />
+<img width="2560" height="1440" alt="hudcolors" src="https://github.com/user-attachments/assets/68610743-c6ff-4b18-ae96-5fbab5ccf69f" />
+<img width="2562" height="1440" alt="hudlayout" src="https://github.com/user-attachments/assets/8e4769e8-12fc-4986-ad7b-78e8e29613eb" />
+<img width="2557" height="1440" alt="hudprofiles" src="https://github.com/user-attachments/assets/cf8b4bbe-2172-4625-9b0b-1fbb10615a82" />
+<img width="2548" height="1440" alt="hudmodes" src="https://github.com/user-attachments/assets/b9dec2e0-4afb-44cb-850c-502d564b2779" />
+<img width="2554" height="1440" alt="hudpresetexample" src="https://github.com/user-attachments/assets/3c2756bb-12be-4022-8082-9c28262102bc" />
+<img width="2560" height="1440" alt="hudpresetexample1" src="https://github.com/user-attachments/assets/1024d65e-1227-4824-9cd2-125f0741fc7f" />
+<img width="2565" height="1440" alt="hudpresetexample2" src="https://github.com/user-attachments/assets/4e186ca8-5f0d-4064-8eb4-332bbb467d12" />
+<img width="2560" height="1440" alt="hudpresetexample3" src="https://github.com/user-attachments/assets/8981abec-b572-4213-8ad5-ed96edc4aef9" />
+<img width="2560" height="1440" alt="hudpresetexample4" src="https://github.com/user-attachments/assets/185c89dc-a2cc-4451-9d50-b744d37b5c33" />
 
 ## Support
 
